@@ -48,6 +48,7 @@ public class MedicoController {
 
     @PostMapping
     public ResponseEntity<Medico> criar(@RequestBody Medico medico) {
+    	System.out.println(medico.getEspecialidade());
         return ResponseEntity.ok(medicoService.save(medico));
     }
 
