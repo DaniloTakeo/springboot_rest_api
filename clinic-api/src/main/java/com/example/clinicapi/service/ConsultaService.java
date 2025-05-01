@@ -1,53 +1,82 @@
 package com.example.clinicapi.service;
 
-import java.time.LocalDateTime;
 import java.util.Optional;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.example.clinicapi.dto.ConsultaDTO;
+import com.example.clinicapi.mapper.ConsultaMapper;
 import com.example.clinicapi.model.Consulta;
 import com.example.clinicapi.model.Medico;
 import com.example.clinicapi.model.Paciente;
+import com.example.clinicapi.model.StatusConsulta;
 import com.example.clinicapi.repository.ConsultaRepository;
 import com.example.clinicapi.repository.MedicoRepository;
 import com.example.clinicapi.repository.PacienteRepository;
 
+import lombok.RequiredArgsConstructor;
+
 @Service
+@RequiredArgsConstructor
 public class ConsultaService {
 
-    @Autowired
-    private ConsultaRepository consultaRepository;
+    private final ConsultaRepository consultaRepository;
+    private final PacienteRepository pacienteRepository;
+    private final MedicoRepository medicoRepository;
+    private final ConsultaMapper consultaMapper;
 
-    @Autowired
-    private PacienteRepository pacienteRepository;
-
-    @Autowired
-    private MedicoRepository medicoRepository;
-
-    // Criar uma consulta
-    public Consulta createConsulta(Long pacienteId, Long medicoId, String dataHora) {
-        Optional<Paciente> paciente = pacienteRepository.findById(pacienteId);
-        Optional<Medico> medico = medicoRepository.findById(medicoId);
+    public ConsultaDTO createConsulta(ConsultaDTO consultaDTO) {
+        Optional<Paciente> paciente = pacienteRepository.findById(consultaDTO.pacienteId());
+        Optional<Medico> medico = medicoRepository.findById(consultaDTO.medicoId());
 
         if (paciente.isPresent() && medico.isPresent()) {
             Consulta consulta = new Consulta();
             consulta.setPaciente(paciente.get());
             consulta.setMedico(medico.get());
-            consulta.setDataHora(LocalDateTime.parse(dataHora));
-            return consultaRepository.save(consulta);
+            consulta.setDataHora(consultaDTO.dataHora());
+            consulta.setStatus(StatusConsulta.AGENDADA);
+
+            Consulta savedConsulta = consultaRepository.save(consulta);
+
+            return consultaMapper.toDTO(savedConsulta);
         }
 
         throw new IllegalArgumentException("Paciente ou Médico não encontrados");
     }
 
-    // Buscar consulta por ID
-    public Optional<Consulta> findById(Long id) {
-        return consultaRepository.findById(id);
+    public Optional<ConsultaDTO> findById(Long id) {
+        return consultaRepository.findById(id).map(consultaMapper::toDTO);
     }
 
-    // Deletar consulta por ID
     public void deleteById(Long id) {
         consultaRepository.deleteById(id);
+    }
+    
+    public Optional<ConsultaDTO> updateConsulta(Long id, ConsultaDTO consultaDTO) {
+        Optional<Consulta> existingConsulta = consultaRepository.findById(id);
+
+        if (existingConsulta.isPresent()) {
+            Consulta consulta = existingConsulta.get();
+
+            if (consultaDTO.pacienteId() != null) {
+                Optional<Paciente> paciente = pacienteRepository.findById(consultaDTO.pacienteId());
+                paciente.ifPresent(consulta::setPaciente);
+            }
+            if (consultaDTO.medicoId() != null) {
+                Optional<Medico> medico = medicoRepository.findById(consultaDTO.medicoId());
+                medico.ifPresent(consulta::setMedico);
+            }
+            if (consultaDTO.dataHora() != null) {
+                consulta.setDataHora(consultaDTO.dataHora());
+            }
+            if (consultaDTO.status() != null) {
+                consulta.setStatus(consultaDTO.status());
+            }
+
+            Consulta updatedConsulta = consultaRepository.save(consulta);
+            return Optional.of(consultaMapper.toDTO(updatedConsulta));
+        }
+
+        throw new IllegalArgumentException("Consulta não encontrada para o ID fornecido");
     }
 }
