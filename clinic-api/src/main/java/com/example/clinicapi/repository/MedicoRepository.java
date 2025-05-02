@@ -1,7 +1,7 @@
 package com.example.clinicapi.repository;
 
-import java.util.List;
-
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
@@ -14,9 +14,9 @@ public interface MedicoRepository extends JpaRepository<Medico, Long> {
 	
 	// Listar apenas médicos ativos
     @Query("SELECT m FROM Medico m WHERE m.ativo = true")
-    List<Medico> findAllAtivos();
+    Page<Medico> findAllAtivos(Pageable pageable);
 
     // Buscar médicos ativos por especialidade
     @Query("SELECT m FROM Medico m WHERE m.ativo = true AND m.especialidade = :especialidade")
-    List<Medico> findByEspecialidadeAndAtivoTrue(Especialidade especialidade);
+    Page<Medico> findByEspecialidadeAndAtivoTrue(Especialidade especialidade, Pageable pageable);
 }

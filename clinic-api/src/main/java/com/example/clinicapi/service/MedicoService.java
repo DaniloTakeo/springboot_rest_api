@@ -1,8 +1,9 @@
 package com.example.clinicapi.service;
 
-import java.util.List;
 import java.util.Optional;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import com.example.clinicapi.dto.MedicoDTO;
@@ -21,11 +22,9 @@ public class MedicoService {
     
     private final MedicoMapper medicoMapper;
 
-    public List<MedicoDTO> findAll() {
-        return medicoRepository.findAll()
-                .stream()
-                .map(medicoMapper::toDTO)
-                .toList();
+    public Page<MedicoDTO> findAll(Pageable pageable) {
+        return medicoRepository.findAll(pageable)
+        		.map(medicoMapper::toDTO);
     }
 
     public Optional<MedicoDTO> findById(Long id) {
@@ -33,18 +32,14 @@ public class MedicoService {
                 .map(medicoMapper::toDTO);
     }
 
-    public List<MedicoDTO> findAllAtivos() {
-        return medicoRepository.findAllAtivos()
-                .stream()
-                .map(medicoMapper::toDTO)
-                .toList();
+    public Page<MedicoDTO> findAllAtivos(Pageable pageable) {
+        return medicoRepository.findAllAtivos(pageable)
+                .map(medicoMapper::toDTO);
     }
 
-    public List<MedicoDTO> findByEspecialidade(Especialidade especialidade) {
-        return medicoRepository.findByEspecialidadeAndAtivoTrue(especialidade)
-                .stream()
-                .map(medicoMapper::toDTO)
-                .toList();
+    public Page<MedicoDTO> findByEspecialidade(Especialidade especialidade, Pageable pageable) {
+        return medicoRepository.findByEspecialidadeAndAtivoTrue(especialidade, pageable)
+                .map(medicoMapper::toDTO);
     }
     
     public MedicoDTO save(MedicoDTO medicoDTO) {

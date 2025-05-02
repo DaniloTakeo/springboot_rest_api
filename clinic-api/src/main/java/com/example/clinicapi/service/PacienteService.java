@@ -1,9 +1,9 @@
 package com.example.clinicapi.service;
 
-import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import com.example.clinicapi.dto.PacienteDTO;
@@ -22,11 +22,9 @@ public class PacienteService {
     
     private final PacienteMapper pacienteMapper = PacienteMapper.INSTANCE;
 
-    public List<PacienteDTO> findAll() {
-        return pacienteRepository.findAll()
-                .stream()
-                .map(pacienteMapper::toDTO) 
-                .collect(Collectors.toList());
+    public Page<PacienteDTO> findAll(Pageable pageable) {
+        return pacienteRepository.findAll(pageable)
+                .map(pacienteMapper::toDTO);
     }
 
     public Optional<PacienteDTO> findById(Long id) {
@@ -34,11 +32,9 @@ public class PacienteService {
                 .map(pacienteMapper::toDTO); 
     }
 
-    public List<PacienteDTO> findAllAtivos() {
-        return pacienteRepository.findAllAtivos()
-                .stream()
-                .map(pacienteMapper::toDTO) 
-                .collect(Collectors.toList());
+    public Page<PacienteDTO> findAllAtivos(Pageable pageable) {
+        return pacienteRepository.findAllAtivos(pageable)
+                .map(pacienteMapper::toDTO);
     }
 
     public PacienteDTO save(PacienteDTO pacienteDTO) {

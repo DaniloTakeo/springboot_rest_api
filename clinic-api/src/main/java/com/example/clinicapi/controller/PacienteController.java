@@ -1,9 +1,11 @@
 package com.example.clinicapi.controller;
 
 import java.net.URI;
-import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -26,13 +28,13 @@ public class PacienteController {
     private PacienteService pacienteService;
 
     @GetMapping
-    public ResponseEntity<List<PacienteDTO>> listarTodos() {
-        return ResponseEntity.ok(pacienteService.findAll());
+    public ResponseEntity<Page<PacienteDTO>> listarTodos(@PageableDefault Pageable pageable) {
+        return ResponseEntity.ok(pacienteService.findAll(pageable));
     }
 
     @GetMapping("/ativos")
-    public ResponseEntity<List<PacienteDTO>> listarAtivos() {
-        return ResponseEntity.ok(pacienteService.findAllAtivos());
+    public ResponseEntity<Page<PacienteDTO>> listarAtivos(@PageableDefault Pageable pageable) {
+        return ResponseEntity.ok(pacienteService.findAllAtivos(pageable));
     }
 
     @GetMapping("/{id}")

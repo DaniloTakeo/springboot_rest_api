@@ -1,9 +1,11 @@
 package com.example.clinicapi.controller;
 
 import java.net.URI;
-import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -27,18 +29,19 @@ public class MedicoController {
     private MedicoService medicoService;
 
     @GetMapping
-    public ResponseEntity<List<MedicoDTO>> listarTodos() {
-        return ResponseEntity.ok(medicoService.findAll());
+    public ResponseEntity<Page<MedicoDTO>> listarTodos(@PageableDefault Pageable pageable) {
+        return ResponseEntity.ok(medicoService.findAll(pageable));
     }
 
     @GetMapping("/ativos")
-    public ResponseEntity<List<MedicoDTO>> listarAtivos() {
-        return ResponseEntity.ok(medicoService.findAllAtivos());
+    public ResponseEntity<Page<MedicoDTO>> listarAtivos(@PageableDefault Pageable pageable) {
+        return ResponseEntity.ok(medicoService.findAllAtivos(pageable));
     }
 
     @GetMapping("/especialidade/{especialidade}")
-    public ResponseEntity<List<MedicoDTO>> buscarPorEspecialidade(@PathVariable Especialidade especialidade) {
-        return ResponseEntity.ok(medicoService.findByEspecialidade(especialidade));
+    public ResponseEntity<Page<MedicoDTO>> buscarPorEspecialidade(@PathVariable Especialidade especialidade,
+    		@PageableDefault Pageable pageable) {
+        return ResponseEntity.ok(medicoService.findByEspecialidade(especialidade, pageable));
     }
 
     @GetMapping("/{id}")
