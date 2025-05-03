@@ -20,6 +20,8 @@ import org.springframework.web.util.UriComponentsBuilder;
 import com.example.clinicapi.dto.PacienteDTO;
 import com.example.clinicapi.service.PacienteService;
 
+import jakarta.validation.Valid;
+
 @RestController
 @RequestMapping("/pacientes")
 public class PacienteController {
@@ -45,7 +47,7 @@ public class PacienteController {
     }
 
     @PostMapping
-    public ResponseEntity<PacienteDTO> criar(@RequestBody PacienteDTO pacienteDTO, UriComponentsBuilder uriBuilder) {
+    public ResponseEntity<PacienteDTO> criar(@RequestBody @Valid PacienteDTO pacienteDTO, UriComponentsBuilder uriBuilder) {
         PacienteDTO pacienteSalvo = pacienteService.save(pacienteDTO);
         URI location = uriBuilder
             .path("/pacientes/{id}")

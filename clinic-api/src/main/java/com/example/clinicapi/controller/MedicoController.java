@@ -21,6 +21,8 @@ import com.example.clinicapi.dto.MedicoDTO;
 import com.example.clinicapi.model.Especialidade;
 import com.example.clinicapi.service.MedicoService;
 
+import jakarta.validation.Valid;
+
 @RestController
 @RequestMapping("/medicos")
 public class MedicoController {
@@ -52,7 +54,7 @@ public class MedicoController {
     }
 
     @PostMapping
-    public ResponseEntity<MedicoDTO> criar(@RequestBody MedicoDTO medicoDTO, UriComponentsBuilder uriBuilder) {
+    public ResponseEntity<MedicoDTO> criar(@RequestBody @Valid MedicoDTO medicoDTO, UriComponentsBuilder uriBuilder) {
         MedicoDTO medicoSalvo = medicoService.save(medicoDTO);
         URI uri = uriBuilder.path("/medicos/{id}").buildAndExpand(medicoSalvo.id()).toUri();
         return ResponseEntity.created(uri).body(medicoSalvo);

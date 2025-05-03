@@ -17,6 +17,8 @@ import org.springframework.web.util.UriComponentsBuilder;
 import com.example.clinicapi.dto.ConsultaDTO;
 import com.example.clinicapi.service.ConsultaService;
 
+import jakarta.validation.Valid;
+
 @RestController
 @RequestMapping("/consultas")
 public class ConsultaController {
@@ -26,7 +28,7 @@ public class ConsultaController {
 
     @PostMapping
     public ResponseEntity<ConsultaDTO> agendar(
-            @RequestBody ConsultaDTO consultaDTO,
+            @RequestBody @Valid ConsultaDTO consultaDTO,
             UriComponentsBuilder uriBuilder) {
         ConsultaDTO createdConsulta = consultaService.createConsulta(consultaDTO);
 
