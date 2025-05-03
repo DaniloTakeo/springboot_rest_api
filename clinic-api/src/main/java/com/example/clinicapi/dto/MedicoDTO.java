@@ -1,5 +1,7 @@
 package com.example.clinicapi.dto;
 
+import java.io.Serializable;
+
 import com.example.clinicapi.model.Especialidade;
 
 import jakarta.validation.constraints.Email;
@@ -26,4 +28,4 @@ public record MedicoDTO(
 	    Especialidade especialidade,
 	    
 	    Boolean ativo
-	) {}
+	) implements Serializable {}

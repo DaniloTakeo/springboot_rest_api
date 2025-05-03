@@ -2,6 +2,8 @@ package com.example.clinicapi.service;
 
 import java.util.Optional;
 
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -32,6 +34,7 @@ public class MedicoService {
                 .map(medicoMapper::toDTO);
     }
 
+    @Cacheable("medicosAtivos")
     public Page<MedicoDTO> findAllAtivos(Pageable pageable) {
         return medicoRepository.findAllAtivos(pageable)
                 .map(medicoMapper::toDTO);
@@ -42,11 +45,13 @@ public class MedicoService {
                 .map(medicoMapper::toDTO);
     }
     
+    @CacheEvict(value = "medicosAtivos", allEntries = true)
     public MedicoDTO save(MedicoDTO medicoDTO) {
         Medico medico = medicoMapper.toEntity(medicoDTO);
         return medicoMapper.toDTO(medicoRepository.save(medico));
     }
 
+    @CacheEvict(value = "medicosAtivos", allEntries = true)
     public MedicoDTO update(Long id, MedicoDTO medicoDTO) {
         Medico medicoExistente = medicoRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Médico não encontrado"));
@@ -61,6 +66,7 @@ public class MedicoService {
         return medicoMapper.toDTO(medicoRepository.save(medicoExistente));
     }
 
+    @CacheEvict(value = "medicosAtivos", allEntries = true)
     public void deleteById(Long id) {
         medicoRepository.deleteById(id);
     }

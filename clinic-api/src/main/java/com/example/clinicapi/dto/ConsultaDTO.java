@@ -1,5 +1,6 @@
 package com.example.clinicapi.dto;
 
+import java.io.Serializable;
 import java.time.LocalDateTime;
 
 import com.example.clinicapi.model.StatusConsulta;
@@ -21,4 +22,4 @@ public record ConsultaDTO(
 	    LocalDateTime dataHora,
 	    String motivoCancelamento,
 	    StatusConsulta status
-	) {}
+	) implements Serializable {} 

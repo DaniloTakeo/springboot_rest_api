@@ -1,5 +1,6 @@
 package com.example.clinicapi.dto;
 
+import java.io.Serializable;
 import java.time.LocalDate;
 
 import jakarta.validation.constraints.Email;
@@ -30,4 +31,4 @@ public record PacienteDTO(
 	    @Past(message = "Data de nascimento deve ser no passado")
 	    LocalDate dataNascimento,
 	    Boolean ativo
-	) {}
+	) implements Serializable {}
