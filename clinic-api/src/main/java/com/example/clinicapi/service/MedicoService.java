@@ -14,6 +14,7 @@ import com.example.clinicapi.model.Especialidade;
 import com.example.clinicapi.model.Medico;
 import com.example.clinicapi.repository.MedicoRepository;
 
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 
 @Service
@@ -30,8 +31,9 @@ public class MedicoService {
     }
 
     public Optional<MedicoDTO> findById(Long id) {
-        return medicoRepository.findById(id)
-                .map(medicoMapper::toDTO);
+    	return Optional.ofNullable(medicoRepository.findById(id)
+                .map(medicoMapper::toDTO)
+                .orElseThrow(() -> new EntityNotFoundException("Médico não encontrado")));
     }
 
     @Cacheable("medicosAtivos")
