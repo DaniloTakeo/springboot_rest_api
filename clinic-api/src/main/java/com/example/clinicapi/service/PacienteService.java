@@ -19,8 +19,7 @@ import lombok.RequiredArgsConstructor;
 public class PacienteService {
 
     private final PacienteRepository pacienteRepository;
-    
-    private final PacienteMapper pacienteMapper = PacienteMapper.INSTANCE;
+    private final PacienteMapper pacienteMapper;
 
     public Page<PacienteDTO> findAll(Pageable pageable) {
         return pacienteRepository.findAll(pageable)
