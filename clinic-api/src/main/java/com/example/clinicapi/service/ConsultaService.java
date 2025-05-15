@@ -2,6 +2,8 @@ package com.example.clinicapi.service;
 
 import java.util.Optional;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import com.example.clinicapi.dto.ConsultaDTO;
@@ -42,6 +44,11 @@ public class ConsultaService {
         }
 
         throw new IllegalArgumentException("Paciente ou Médico não encontrados");
+    }
+    
+    public Page<ConsultaDTO> findAll(Pageable pageable) {
+        return consultaRepository.findAll(pageable)
+                .map(consultaMapper::toDTO);
     }
 
     public Optional<ConsultaDTO> findById(Long id) {
