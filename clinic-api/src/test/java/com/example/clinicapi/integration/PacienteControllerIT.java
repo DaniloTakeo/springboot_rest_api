@@ -20,7 +20,12 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.DynamicPropertyRegistry;
+import org.springframework.test.context.DynamicPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
+import org.testcontainers.containers.MySQLContainer;
+import org.testcontainers.junit.jupiter.Container;
+import org.testcontainers.junit.jupiter.Testcontainers;
 
 import com.example.clinicapi.dto.PacienteDTO;
 import com.example.clinicapi.model.Paciente;
@@ -30,11 +35,31 @@ import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 
 import jakarta.transaction.Transactional;
 
+@Testcontainers
 @SpringBootTest
 @AutoConfigureMockMvc
 @ActiveProfiles("test")
 @Transactional
 class PacienteControllerIT {
+	
+	@Container
+    static MySQLContainer<?> mysql = new MySQLContainer<>("mysql:8.0")
+        .withDatabaseName("test_db")
+        .withUsername("testuser")
+        .withPassword("testpass");
+
+	@DynamicPropertySource
+	static void configureProperties(DynamicPropertyRegistry registry) {
+	    registry.add("spring.datasource.url", mysql::getJdbcUrl);
+	    registry.add("spring.datasource.username", mysql::getUsername);
+	    registry.add("spring.datasource.password", mysql::getPassword);
+	    registry.add("spring.datasource.driver-class-name", mysql::getDriverClassName);
+	    registry.add("spring.jpa.database-platform", () -> "org.hibernate.dialect.MySQL8Dialect");
+	    registry.add("spring.flyway.url", mysql::getJdbcUrl);
+	    registry.add("spring.flyway.user", mysql::getUsername);
+	    registry.add("spring.flyway.password", mysql::getPassword);
+	    registry.add("spring.flyway.enabled", () -> "true");
+	}
 
     @Autowired
     private MockMvc mockMvc;
