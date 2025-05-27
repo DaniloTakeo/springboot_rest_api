@@ -27,4 +27,4 @@ jobs:
 
       - name: Build and test with Maven
         run: mvn clean verify
-        working-directory: springboot_rest_api/clinic-api
+        working-directory: clinic-api
