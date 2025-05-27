@@ -8,6 +8,7 @@ import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.testcontainers.containers.MySQLContainer;
+import org.testcontainers.containers.Network;
 import org.testcontainers.containers.wait.strategy.Wait;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
@@ -22,6 +23,9 @@ public class BaseIT {
             .withDatabaseName("test_db")
             .withUsername("testuser")
             .withPassword("testpass")
+            .withReuse(false)
+            .withNetwork(Network.SHARED)
+            .withNetworkAliases("mysql")
             .waitingFor(Wait.forListeningPort())
             .withStartupTimeout(Duration.ofSeconds(60));
 
