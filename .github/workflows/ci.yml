@@ -26,6 +26,14 @@ jobs:
           key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
           restore-keys: ${{ runner.os }}-maven
 
+      - name: Verificar acesso ao Docker
+        run: |
+          docker version
+          docker info
+          
+      - name: Set Testcontainers logging level
+        run: echo "TESTCONTAINERS_RYUK_DISABLED=false" >> $GITHUB_ENV
+
       - name: Debug Docker info
         run: docker info
 
