@@ -1,5 +1,6 @@
 package com.example.clinicapi.integration;
 
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.DynamicPropertyRegistry;
@@ -13,6 +14,11 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 @ExtendWith(SpringExtension.class)
 @Testcontainers
 public class BaseIT {
+	
+	@BeforeAll
+	static void startContainer() {
+	    mysql.start();
+	}
 	
 	@Container
     protected static final MySQLContainer<?> mysql = new MySQLContainer<>("mysql:8.0")
@@ -31,5 +37,6 @@ public class BaseIT {
         registry.add("spring.flyway.user", mysql::getUsername);
         registry.add("spring.flyway.password", mysql::getPassword);
         registry.add("spring.flyway.enabled", () -> "true");
+        registry.add("spring.datasource.hikari.connection-timeout", () -> "30000"); 
     }
 }
