@@ -30,12 +30,12 @@ jobs:
         run: |
           docker version
           docker info
-          
-      - name: Set Testcontainers logging level
-        run: echo "TESTCONTAINERS_RYUK_DISABLED=false" >> $GITHUB_ENV
 
-      - name: Debug Docker info
-        run: docker info
+      - name: Set DOCKER_HOST
+        run: echo "DOCKER_HOST=unix:///var/run/docker.sock" >> $GITHUB_ENV
+
+      - name: Permitir acesso ao Docker
+        run: sudo chmod 666 /var/run/docker.sock
 
       - name: Run tests with Maven
         working-directory: ./clinic-api
