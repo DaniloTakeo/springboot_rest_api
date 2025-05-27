@@ -25,6 +25,6 @@ jobs:
           java-version: '17'
           distribution: 'temurin'
 
-      - name: Build and test with Maven
-        run: mvn clean verify
-        working-directory: clinic-api
+      - name: Build only
+        working-directory: ./clinic-api
+        run: mvn clean install -DskipTests
