@@ -35,7 +35,12 @@ jobs:
         run: echo "DOCKER_HOST=unix:///var/run/docker.sock" >> $GITHUB_ENV
 
       - name: Permitir acesso ao Docker
-        run: sudo chmod 666 /var/run/docker.sock
+        run: | 
+            sudo chmod 666 /var/run/docker.sock
+            sudo systemctl start docker
+            sudo systemctl enable docker
+            sudo usermod -aG docker $USER
+            sudo chmod 666 /var/run/docker.sock
 
       - name: Run tests with Maven
         working-directory: ./clinic-api
