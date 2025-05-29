@@ -30,7 +30,7 @@ import jakarta.transaction.Transactional;
 @AutoConfigureMockMvc
 @ActiveProfiles("test")
 @Transactional
-class MedicoControllerIT extends BaseIT {
+class MedicoControllerIT extends TestBaseIT {
 
     @Autowired
     private MockMvc mockMvc;

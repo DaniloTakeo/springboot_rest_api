@@ -4,11 +4,11 @@ import java.time.Duration;
 
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.testcontainers.containers.MySQLContainer;
-import org.testcontainers.containers.Network;
 import org.testcontainers.containers.wait.strategy.Wait;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
@@ -16,18 +16,19 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 @SpringBootTest
 @ExtendWith(SpringExtension.class)
 @Testcontainers
-public class BaseIT {
+@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_CLASS)
+public class TestBaseIT {
 	
 	@Container
     protected static final MySQLContainer<?> mysql = new MySQLContainer<>("mysql:8.0")
             .withDatabaseName("test_db")
             .withUsername("testuser")
             .withPassword("testpass")
-            .withReuse(false)
-            .withNetwork(Network.SHARED)
-            .withNetworkAliases("mysql")
+            .withReuse(true)
             .waitingFor(Wait.forListeningPort())
-            .withStartupTimeout(Duration.ofSeconds(60));
+            .waitingFor(Wait.forLogMessage(".*ready for connections.*\\s", 1)
+                    .withStartupTimeout(Duration.ofSeconds(120)))
+            .withStartupTimeout(Duration.ofSeconds(120));
 
     @DynamicPropertySource
     static void configureProperties(DynamicPropertyRegistry registry) {
@@ -40,5 +41,6 @@ public class BaseIT {
         registry.add("spring.flyway.user", mysql::getUsername);
         registry.add("spring.flyway.password", mysql::getPassword);
         registry.add("spring.flyway.enabled", () -> "true");
+        registry.add("spring.datasource.hikari.max-lifetime", () -> "120000");
     }
 }
