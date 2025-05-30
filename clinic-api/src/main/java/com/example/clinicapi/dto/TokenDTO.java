@@ -1,3 +1,3 @@
 package com.example.clinicapi.dto;
 
-public record TokenDTO(String token) {}
+public record TokenDTO(String token) { }

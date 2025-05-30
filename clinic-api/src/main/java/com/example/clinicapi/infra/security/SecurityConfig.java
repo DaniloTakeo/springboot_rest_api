@@ -16,21 +16,45 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 
 import com.example.clinicapi.service.AutenticacaoService;
 
+/**
+ * Classe de configuração de segurança para a aplicação Spring Boot.
+ * Define as regras de segurança HTTP,
+ * o gerenciador de autenticação e o codificador de senhas.
+ */
 @Configuration
 @EnableWebSecurity
-public class SecurityConfig {
+public final class SecurityConfig {
 
-	@Autowired
+    /**
+     * O filtro de segurança customizado para processamento de JWTs.
+     */
+    @Autowired
     private SecurityFilter securityFilter;
-    
+
+    /**
+     * Serviço responsável por carregar
+     * os detalhes do usuário para autenticação.
+     */
     @Autowired
     private AutenticacaoService usuarioService;
-    
+
+    /**
+     * Configura a cadeia de filtros de segurança HTTP.
+     * Define as permissões de acesso aos endpoints,
+     * gerenciamento de sessão e adição de filtros customizados.
+     *
+     * @param http O objeto HttpSecurity para configurar a segurança web.
+     * @return A SecurityFilterChain configurada.
+     * @throws Exception Se ocorrer um erro durante a configuração.
+     */
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+    public SecurityFilterChain securityFilterChain(
+            final HttpSecurity http) throws Exception {
         http
             .csrf(AbstractHttpConfigurer::disable)
-            .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+            .sessionManagement(session -> session
+                .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+            )
             .authorizeHttpRequests(auth -> auth
                 .requestMatchers(
                     "/auth",
@@ -41,14 +65,26 @@ public class SecurityConfig {
                 ).permitAll()
                 .anyRequest().authenticated()
             )
-            .addFilterBefore(securityFilter, UsernamePasswordAuthenticationFilter.class);
+            .addFilterBefore(securityFilter,
+                    UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }
 
+    /**
+     * Configura o gerenciador de autenticação.
+     * Utiliza o serviço de detalhes do usuário
+     * e o codificador de senhas para a autenticação.
+     *
+     * @param http O objeto HttpSecurity
+     * para obter o AuthenticationManagerBuilder.
+     * @return O AuthenticationManager configurado.
+     * @throws Exception Se ocorrer um erro durante a configuração.
+     */
+    @Bean
     @SuppressWarnings("removal")
-	@Bean
-    public AuthenticationManager authenticationManager(HttpSecurity http) throws Exception {
+    public AuthenticationManager authenticationManager(
+            final HttpSecurity http) throws Exception {
         return http.getSharedObject(AuthenticationManagerBuilder.class)
                 .userDetailsService(usuarioService)
                 .passwordEncoder(passwordEncoder())
@@ -56,10 +92,14 @@ public class SecurityConfig {
                 .build();
     }
 
+    /**
+     * Fornece uma instância do
+     * codificador de senhas BCryptPasswordEncoder.
+     *
+     * @return Uma instância de BCryptPasswordEncoder.
+     */
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
-    
-    
 }

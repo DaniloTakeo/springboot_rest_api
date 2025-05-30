@@ -5,7 +5,13 @@ import org.springframework.stereotype.Repository;
 
 import com.example.clinicapi.model.Consulta;
 
+/**
+ * Interface de repositório para a entidade {@link Consulta}.
+ * Fornece métodos de persistência para operações CRUD
+ * (Criar, Ler, Atualizar, Excluir)
+ * e funcionalidades de paginação e ordenação, estendendo JpaRepository.
+ */
 @Repository
 public interface ConsultaRepository extends JpaRepository<Consulta, Long> {
-	
+
 }

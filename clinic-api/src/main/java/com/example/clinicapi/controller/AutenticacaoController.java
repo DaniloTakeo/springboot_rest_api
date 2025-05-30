@@ -20,18 +20,32 @@ import jakarta.validation.Valid;
 @RequestMapping("/auth")
 public class AutenticacaoController {
 
-	@Autowired
+    /**
+     * Gerenciador de autenticação para processar as requisições de login.
+     */
+    @Autowired
     private AuthenticationManager manager;
-	
-	@Autowired
+
+    /**
+     * Serviço para manipulação de tokens JWT.
+     */
+    @Autowired
     private JwtService jwtService;
 
+    /**
+     * Realiza a autenticação de um usuário e gera um token JWT.
+     *
+     * @param dados As credenciais de autenticação (login e senha) do usuário.
+     * @return Um TokenDTO contendo o token JWT gerado.
+     */
     @PostMapping
-    public TokenDTO login(@RequestBody @Valid DadosAutenticacaoDTO dados) {
+    public TokenDTO login(
+            @RequestBody @Valid final DadosAutenticacaoDTO dados) {
         Authentication auth = manager.authenticate(
-                new UsernamePasswordAuthenticationToken(dados.login(), dados.senha())
+                new UsernamePasswordAuthenticationToken(dados.login(),
+                        dados.senha())
         );
-        
+
         var usuario = (Usuario) auth.getPrincipal();
         var token = jwtService.generateToken(usuario.getLogin());
         return new TokenDTO(token);

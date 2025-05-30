@@ -10,25 +10,27 @@ import jakarta.validation.constraints.Past;
 import jakarta.validation.constraints.Pattern;
 
 public record PacienteDTO(
-	    Long id,
-	    
-	    @NotBlank(message = "Nome é obrigatório")
-	    String nome,
-	    
-	    @NotBlank(message = "Email é obrigatório")
-	    @Email(message = "Email inválido")
-	    String email,
-	    
-	    @NotBlank(message = "CPF é obrigatório")
-	    @Pattern(regexp = "\\d{11}", message = "CPF deve conter 11 dígitos numéricos")
-	    String cpf,
-	    
-	    @NotBlank(message = "Telefone é obrigatório")
-	    @Pattern(regexp = "\\d{10,11}", message = "Telefone deve conter 10 ou 11 dígitos numéricos")
-	    String telefone,
-	    
-	    @NotNull(message = "Data de nascimento é obrigatória")
-	    @Past(message = "Data de nascimento deve ser no passado")
-	    LocalDate dataNascimento,
-	    Boolean ativo
-	) implements Serializable {}
+        Long id,
+
+        @NotBlank(message = "Nome é obrigatório")
+        String nome,
+
+        @NotBlank(message = "Email é obrigatório")
+        @Email(message = "Email inválido")
+        String email,
+
+        @NotBlank(message = "CPF é obrigatório")
+        @Pattern(regexp = "\\d{11}",
+            message = "CPF deve conter 11 dígitos numéricos")
+        String cpf,
+
+        @NotBlank(message = "Telefone é obrigatório")
+        @Pattern(regexp = "\\d{10,11}",
+            message = "Telefone deve conter 10 ou 11 dígitos numéricos")
+        String telefone,
+
+        @NotNull(message = "Data de nascimento é obrigatória")
+        @Past(message = "Data de nascimento deve ser no passado")
+        LocalDate dataNascimento,
+        Boolean ativo
+        ) implements Serializable { }

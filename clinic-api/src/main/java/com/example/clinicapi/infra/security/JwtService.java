@@ -10,19 +10,64 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
 
+/**
+ * Serviço responsável por gerar e validar JSON Web Tokens (JWTs).
+ * Gerencia a criação do token com base em um sujeito
+ * e a extração do sujeito de um token existente.
+ */
 @Service
-public class JwtService {
+public final class JwtService {
 
+    /**
+     * A chave secreta utilizada para assinar e validar os tokens JWT,
+     * carregada das propriedades da aplicação.
+     */
     @Value("${api.security.token.secret}")
-    private String secret; // deve ser uma string com pelo menos 256 bits (~32 chars)
+    private String secret;
 
+    /**
+     * Define o tempo de expiração do token
+     * em milissegundos por unidade de tempo.
+     */
+    private static final long MILLIS_PER_SECOND = 1000L;
+
+    /**
+     * Define o tempo de expiração do token
+     * em milissegundos por unidade de tempo.
+     */
+    private static final long SECONDS_PER_MINUTE = 60L;
+
+    /**
+     * Define o tempo de expiração do token
+     * em milissegundos por unidade de tempo.
+     */
+    private static final long MINUTES_PER_HOUR = 60L;
+    /**
+     * O tempo de expiração padrão para os tokens JWT, em horas.
+     */
+    private static final long TOKEN_EXPIRATION_HOURS = 2L;
+
+    /**
+     * Obtém a chave de assinatura para o JWT a partir da chave secreta.
+     *
+     * @return A chave de assinatura.
+     */
     private Key getSigningKey() {
         return Keys.hmacShaKeyFor(secret.getBytes());
     }
 
-    public String generateToken(String subject) {
-        Date now = new Date();
-        Date expiration = new Date(now.getTime() + 1000 * 60 * 60 * 2); // 2 horas
+    /**
+     * Gera um novo token JWT para o sujeito especificado.
+     * O token inclui o sujeito, data de emissão e data de expiração.
+     *
+     * @param subject O sujeito do token (geralmente o login do usuário).
+     * @return O token JWT gerado.
+     */
+    public String generateToken(final String subject) {
+        final Date now = new Date();
+        final Date expiration = new Date(now.getTime()
+                + MILLIS_PER_SECOND * SECONDS_PER_MINUTE
+                * MINUTES_PER_HOUR * TOKEN_EXPIRATION_HOURS);
 
         return Jwts.builder()
                 .setSubject(subject)
@@ -32,7 +77,13 @@ public class JwtService {
                 .compact();
     }
 
-    public String getSubject(String token) {
+    /**
+     * Extrai o sujeito (subject) de um token JWT.
+     *
+     * @param token O token JWT a ser parseado.
+     * @return O sujeito do token.
+     */
+    public String getSubject(final String token) {
         return Jwts
                 .parserBuilder()
                 .setSigningKey(getSigningKey())

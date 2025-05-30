@@ -58,5 +58,4 @@ public class Paciente {
      * Indica se o cadastro do paciente está ativo no sistema.
      */
     private boolean ativo;
-	
 }

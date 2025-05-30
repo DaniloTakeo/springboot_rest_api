@@ -7,20 +7,33 @@ import com.example.clinicapi.dto.DadosAutenticacaoDTO;
 import com.example.clinicapi.model.Usuario;
 import com.example.clinicapi.repository.UsuarioRepository;
 
-@Service
-public class UsuarioService {
+import lombok.RequiredArgsConstructor;
 
+/**
+ * Serviço responsável pela lógica de negócios relacionada a usuários,
+ * como o cadastro de novos usuários e a criptografia de senhas.
+ */
+@Service
+@RequiredArgsConstructor
+public final class UsuarioService {
+
+    /**
+     * Repositório para operações de persistência de usuários.
+     */
     private final UsuarioRepository repository;
+    /**
+     * Componente para codificação de senhas.
+     */
     private final PasswordEncoder encoder;
 
-    public UsuarioService(UsuarioRepository repository, PasswordEncoder encoder) {
-        this.repository = repository;
-        this.encoder = encoder;
-    }
-
-    public void cadastrarUsuario(DadosAutenticacaoDTO dados) {
-        String senhaCriptografada = encoder.encode(dados.senha());
-        Usuario usuario = new Usuario(dados.login(), senhaCriptografada);
+    /**
+     * Cadastra um novo usuário no sistema, criptografando sua senha.
+     *
+     * @param dados O DTO contendo o login e a senha do novo usuário.
+     */
+    public void cadastrarUsuario(final DadosAutenticacaoDTO dados) {
+        final String senhaCriptografada = encoder.encode(dados.senha());
+        final Usuario usuario = new Usuario(dados.login(), senhaCriptografada);
         repository.save(usuario);
     }
 }

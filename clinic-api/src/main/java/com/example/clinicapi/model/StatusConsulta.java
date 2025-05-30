@@ -20,8 +20,8 @@ public enum StatusConsulta {
      */
     private final String descricao;
 
-    StatusConsulta(final String descricao) {
-        this.descricao = descricao;
+    StatusConsulta(final String pDescricao) {
+        this.descricao = pDescricao;
     }
 
     /**

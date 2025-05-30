@@ -27,9 +27,9 @@ import lombok.Setter;
 @Table(name = "consultas")
 public class Consulta {
 
-	/**
-	 * O identificador único da consulta.
-	 */
+    /**
+     * O identificador único da consulta.
+     */
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;

@@ -14,7 +14,8 @@ public enum Especialidade {
      */
     GINECOLOGIA("Ginecologia"),
     /**
-     * Especialidade médica focada nos ossos, articulações, ligamentos, tendões e músculos.
+     * Especialidade médica focada nos ossos,
+     * articulações, ligamentos, tendões e músculos.
      */
     ORTOPEDIA("Ortopedia"),
     /**

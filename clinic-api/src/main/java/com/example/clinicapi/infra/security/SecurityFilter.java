@@ -16,42 +16,98 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 
+/**
+ * Filtro de segurança responsável por processar
+ * tokens JWT para autenticação
+ * e autorização de requisições.
+ * Estende OncePerRequestFilter para garantir que o
+ * filtro seja executado uma única vez por requisição.
+ */
 @Component
 @RequiredArgsConstructor
-public class SecurityFilter extends OncePerRequestFilter {
+public final class SecurityFilter extends OncePerRequestFilter {
 
+    /**
+     * Serviço para manipulação de JWTs (gerar, extrair sujeito).
+     */
     private final JwtService jwtService;
+    /**
+     * Repositório para acessar informações de usuário no banco de dados.
+     */
     private final UsuarioRepository usuarioRepository;
 
+    /**
+     * Executa a lógica do filtro para cada requisição HTTP.
+     * Recupera o token JWT, valida-o
+     * e autentica o usuário se o token for válido.
+     *
+     * @param request  O objeto HttpServletRequest.
+     * @param response O objeto HttpServletResponse.
+     * @param chain    A cadeia de filtros.
+     * @throws ServletException Se ocorrer um erro de servlet.
+     * @throws IOException      Se ocorrer um erro de I/O.
+     */
     @Override
-    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain)
-            throws ServletException, IOException {
+    protected void doFilterInternal(
+            final HttpServletRequest request,
+            final HttpServletResponse response,
+            final FilterChain chain) throws ServletException, IOException {
 
-        var token = recuperarToken(request);
-        if (token != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-            var login = jwtService.getSubject(token);
-            var usuario = usuarioRepository.findByLogin(login);
+        final String token = recuperarToken(request);
+        if (token != null
+                && SecurityContextHolder.getContext()
+                .getAuthentication() == null) {
+            final String login = jwtService.getSubject(token);
+            final var usuario = usuarioRepository
+                    .findByLogin(login);
 
             if (usuario.isPresent()) {
-                var authentication = new UsernamePasswordAuthenticationToken(
-                        usuario.get(), null, usuario.get().getAuthorities()
-                );
-                authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-                SecurityContextHolder.getContext().setAuthentication(authentication);
+                final UsernamePasswordAuthenticationToken authentication =
+                        new UsernamePasswordAuthenticationToken(
+                                usuario.get(),
+                                null,
+                                usuario.get()
+                                .getAuthorities()
+                        );
+                authentication.setDetails(
+                        new WebAuthenticationDetailsSource()
+                        .buildDetails(request));
+                SecurityContextHolder.getContext()
+                .setAuthentication(authentication);
             }
         }
 
         chain.doFilter(request, response);
     }
 
-    private String recuperarToken(HttpServletRequest request) {
-        var header = request.getHeader("Authorization");
-        return (header != null && header.startsWith("Bearer ")) ? header.replace("Bearer ", "") : null;
+    /**
+     * Recupera o token JWT do cabeçalho
+     * "Authorization" da requisição.
+     *
+     * @param request O objeto HttpServletRequest.
+     * @return O token JWT (sem o prefixo "Bearer "),
+     * ou null se não for encontrado.
+     */
+    private String recuperarToken(final HttpServletRequest request) {
+        final String header = request.getHeader("Authorization");
+        return (header != null && header.startsWith("Bearer "))
+                ? header.replace("Bearer ", "") : null;
     }
-    
+
+    /**
+     * Determina se o filtro deve ser aplicado à requisição atual.
+     * Ignora o filtro para o endpoint de autenticação.
+     *
+     * @param request O objeto HttpServletRequest.
+     * @return true se o filtro
+     * NÃO deve ser executado, false caso contrário.
+     * @throws ServletException Se ocorrer um erro de servlet.
+     */
     @Override
-    protected boolean shouldNotFilter(HttpServletRequest request) throws ServletException {
-        String path = request.getRequestURI();
+    protected boolean shouldNotFilter(
+            final HttpServletRequest request)
+                    throws ServletException {
+        final String path = request.getRequestURI();
         return path.equals("/auth");
     }
 }

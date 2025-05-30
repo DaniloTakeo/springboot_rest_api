@@ -22,7 +22,7 @@ import lombok.Setter;
 @Table(name = "medicos")
 public class Medico {
 
-	/**
+    /**
      * O identificador único do médico.
      */
     @Id
@@ -71,11 +71,11 @@ public class Medico {
      * @param pTelefone      O número de telefone do médico.
      */
     public Medico(
-    		final String pNome,
-    		final String pCrm,
-    		final Especialidade pEspecialidade,
-    		final String pEmail,
-    		final String pTelefone) {
+            final String pNome,
+            final String pCrm,
+            final Especialidade pEspecialidade,
+            final String pEmail,
+            final String pTelefone) {
         this.nome = pNome;
         this.crm = pCrm;
         this.especialidade = pEspecialidade;

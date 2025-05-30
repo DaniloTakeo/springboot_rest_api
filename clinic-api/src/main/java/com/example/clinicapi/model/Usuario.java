@@ -32,7 +32,7 @@ import lombok.Setter;
 @SuppressWarnings("serial")
 public final class Usuario implements UserDetails {
 
-	/**
+    /**
      * O identificador único do usuário.
      */
     @Id
@@ -56,10 +56,11 @@ public final class Usuario implements UserDetails {
     private Role role;
 
     /**
-     * Construtor alternativo usado na criação de novos usuários com role padrão.
+     * Construtor alternativo usado na criação
+     * de novos usuários com role padrão.
      *
      * @param pLogin             nome de login do usuário
-     * @param senhaCriptografada senha já criptografada
+     * @param pSenhaCriptografada senha já criptografada
      */
     public Usuario(final String pLogin, final String pSenhaCriptografada) {
         this.login = pLogin;
@@ -133,7 +134,8 @@ public final class Usuario implements UserDetails {
      * Este método é utilizado pelo Spring Security. Subclasses podem
      * implementar lógica de expiração de credenciais.
      *
-     * @return true se as credenciais são válidas (não expiradas), false caso contrário.
+     * @return true se as credenciais são válidas (não expiradas),
+     * false caso contrário.
      */
     @Override
     public boolean isCredentialsNonExpired() {
