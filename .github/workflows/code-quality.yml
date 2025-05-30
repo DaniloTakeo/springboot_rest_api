@@ -10,5 +10,5 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: code-quality test 
-        working-directory: ./clinic-api
+        working-directory: clinic-api
         run: mvn checkstyle:check pmd:check
