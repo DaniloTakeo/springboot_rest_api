@@ -107,6 +107,6 @@ class PacienteControllerIT extends TestBaseIT {
                 .andExpect(status().isNoContent());
 
         Optional<Paciente> encontrado = pacienteRepository.findById(paciente.getId());
-        assertTrue(encontrado.isEmpty() || !encontrado.get().getAtivo());
+        assertTrue(encontrado.isEmpty() || !encontrado.get().isAtivo());
     }
 }

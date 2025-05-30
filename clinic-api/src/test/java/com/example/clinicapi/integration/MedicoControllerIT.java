@@ -98,6 +98,6 @@ class MedicoControllerIT extends TestBaseIT {
                 .andExpect(status().isNoContent());
 
         Optional<Medico> encontrado = medicoRepository.findById(medico.getId());
-        assertTrue(encontrado.isEmpty() || !encontrado.get().getAtivo());
+        assertTrue(encontrado.isEmpty() || !encontrado.get().isAtivo());
     }
 }

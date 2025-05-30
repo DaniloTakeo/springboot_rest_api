@@ -7,8 +7,15 @@ import org.springframework.security.core.GrantedAuthority;
  * Cada role representa uma autoridade reconhecida pelo Spring Security.
  */
 public enum Role implements GrantedAuthority {
-    
+
+	/**
+     * Representa um usuário comum com permissões básicas.
+     */
     ROLE_USER,
+    
+    /**
+     * Representa um administrador com permissões elevadas.
+     */
     ROLE_ADMIN;
 
     /**
