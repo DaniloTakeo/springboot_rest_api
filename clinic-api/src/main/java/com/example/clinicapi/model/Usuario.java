@@ -19,6 +19,9 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+/**
+ * Representa um usuário do sistema, utilizado para autenticação e autorização.
+ */
 @Entity
 @Table(name = "usuarios")
 @Getter
@@ -26,14 +29,10 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+@SuppressWarnings("serial")
 public class Usuario implements UserDetails {
 
-    /**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
-
-	@Id
+    @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
@@ -44,17 +43,24 @@ public class Usuario implements UserDetails {
     @Enumerated(EnumType.STRING)
     private Role role;
 
-    public Usuario(String login, String senhaCriptografada) {
-    	this.login = login;
-    	this.senha = senhaCriptografada;
-    	this.role = Role.ROLE_USER;
+    /**
+     * Construtor alternativo usado na criação de novos usuários com role padrão.
+     * 
+     * @param login               nome de login do usuário
+     * @param senhaCriptografada senha já criptografada
+     */
+    public Usuario(final String login, final String senhaCriptografada) {
+        this.login = login;
+        this.senha = senhaCriptografada;
+        this.role = Role.ROLE_USER;
     }
-    
-    // Implementação dos métodos de UserDetails
+
+    // Implementação dos métodos da interface UserDetails
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return List.of(role); // seguro, se Role implementa GrantedAuthority
+        // Requer que Role implemente GrantedAuthority
+        return List.of(role);
     }
 
     @Override
@@ -86,5 +92,4 @@ public class Usuario implements UserDetails {
     public boolean isEnabled() {
         return true;
     }
-
 }

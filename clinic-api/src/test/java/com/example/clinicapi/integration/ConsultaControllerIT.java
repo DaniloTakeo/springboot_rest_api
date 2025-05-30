@@ -83,7 +83,7 @@ class ConsultaControllerIT extends TestBaseIT {
                 "11777777777", LocalDate.of(1985, 4, 15), true));
         Medico medico = medicoRepository.save(new Medico(null, "Dr. Miguel", "999999", Especialidade.DERMATOLOGIA, "miguel@email.com", "123456789", true));
 
-        Consulta consulta = new Consulta(null, paciente, medico, LocalDateTime.now().plusDays(2), "Retorno", StatusConsulta.REALIZADA);
+        Consulta consulta = new Consulta(null, paciente, medico, LocalDateTime.now().plusDays(2), StatusConsulta.REALIZADA, "Retorno");
         consultaRepository.save(consulta);
 
         mockMvc.perform(get("/consultas"))
@@ -98,7 +98,7 @@ class ConsultaControllerIT extends TestBaseIT {
         Paciente paciente = pacienteRepository.save(new Paciente(null, "Carlos", "carlos@email.com", "12345678904",
                 "11555555555", LocalDate.of(1970, 12, 12), true));
         Medico medico = medicoRepository.save(new Medico(null, "Dr. Miguel", "999999", Especialidade.DERMATOLOGIA, "miguel@email.com", "123456789", true));
-        Consulta consulta = consultaRepository.save(new Consulta(null, paciente, medico, LocalDateTime.now().plusDays(3), "Avaliação", StatusConsulta.AGENDADA));
+        Consulta consulta = consultaRepository.save(new Consulta(null, paciente, medico, LocalDateTime.now().plusDays(3), StatusConsulta.AGENDADA, "Avaliação"));
 
         mockMvc.perform(delete("/consultas/" + consulta.getId()))
                 .andExpect(status().isNoContent());
