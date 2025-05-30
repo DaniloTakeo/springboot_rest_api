@@ -20,7 +20,7 @@ import lombok.RequiredArgsConstructor;
  */
 @Service
 @RequiredArgsConstructor
-public final class PacienteService {
+public class PacienteService {
 
     /**
      * Repositório para operações de persistência de pacientes.

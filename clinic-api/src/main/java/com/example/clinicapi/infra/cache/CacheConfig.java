@@ -16,7 +16,7 @@ import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
  * Define o tempo de vida padrão dos itens no cache e a serialização.
  */
 @Configuration
-public final class CacheConfig {
+public class CacheConfig {
 
     /**
      * Define o tempo de vida padrão (TTL) para os itens do cache em minutos.

@@ -13,7 +13,7 @@ import io.swagger.v3.oas.models.info.Info;
  * que serão exibidas na interface Swagger UI.
  */
 @Configuration
-public final class OpenAPIConfig {
+public class OpenAPIConfig {
 
     /**
      * Configura e retorna um objeto OpenAPI com as informações da API.

@@ -15,7 +15,7 @@ import lombok.RequiredArgsConstructor;
  */
 @Service
 @RequiredArgsConstructor
-public final class UsuarioService {
+public class UsuarioService {
 
     /**
      * Repositório para operações de persistência de usuários.

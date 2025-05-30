@@ -24,7 +24,7 @@ import lombok.RequiredArgsConstructor;
  */
 @Service
 @RequiredArgsConstructor
-public final class MedicoService { // Classe marcada como final
+public class MedicoService {
 
     /**
      * Repositório para operações de persistência de médicos.

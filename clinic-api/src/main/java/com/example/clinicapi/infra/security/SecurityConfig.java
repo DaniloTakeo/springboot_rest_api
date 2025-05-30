@@ -23,7 +23,7 @@ import com.example.clinicapi.service.AutenticacaoService;
  */
 @Configuration
 @EnableWebSecurity
-public final class SecurityConfig {
+public class SecurityConfig {
 
     /**
      * O filtro de segurança customizado para processamento de JWTs.

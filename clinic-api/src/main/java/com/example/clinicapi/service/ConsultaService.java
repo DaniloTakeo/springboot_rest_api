@@ -24,7 +24,7 @@ import lombok.RequiredArgsConstructor;
  */
 @Service
 @RequiredArgsConstructor
-public final class ConsultaService { // Classe marcada como final
+public class ConsultaService { // Classe marcada como final
 
     /**
      * Repositório para operações de persistência de consultas.

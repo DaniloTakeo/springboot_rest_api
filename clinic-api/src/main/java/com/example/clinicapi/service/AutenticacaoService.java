@@ -13,7 +13,7 @@ import com.example.clinicapi.repository.UsuarioRepository;
  * no Spring Security. Implementa a interface {@link UserDetailsService}.
  */
 @Service
-public final class AutenticacaoService implements UserDetailsService {
+public class AutenticacaoService implements UserDetailsService {
 
     /**
      * Repositório para operações de acesso a dados de usuários.
