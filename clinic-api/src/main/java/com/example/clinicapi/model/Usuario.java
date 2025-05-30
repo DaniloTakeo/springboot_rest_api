@@ -32,11 +32,11 @@ import lombok.Setter;
 @SuppressWarnings("serial")
 public final class Usuario implements UserDetails {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    /**
+	/**
      * O identificador único do usuário.
      */
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     /**
@@ -49,10 +49,10 @@ public final class Usuario implements UserDetails {
      */
     private String senha;
 
-    @Enumerated(EnumType.STRING)
     /**
      * O papel (role) de acesso do usuário no sistema.
      */
+    @Enumerated(EnumType.STRING)
     private Role role;
 
     /**
@@ -61,13 +61,12 @@ public final class Usuario implements UserDetails {
      * @param pLogin             nome de login do usuário
      * @param senhaCriptografada senha já criptografada
      */
-    public Usuario(final String login, final String senhaCriptografada) {
-        this.login = login;
-        this.senha = senhaCriptografada;
+    public Usuario(final String pLogin, final String pSenhaCriptografada) {
+        this.login = pLogin;
+        this.senha = pSenhaCriptografada;
         this.role = Role.ROLE_USER;
     }
 
-    @Override
     /**
      * Retorna as autoridades concedidas ao usuário.
      * Este método é utilizado pelo Spring Security para determinar
@@ -76,11 +75,11 @@ public final class Usuario implements UserDetails {
      *
      * @return Uma coleção de GrantedAuthority.
      */
+    @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return List.of(role);
     }
 
-    @Override
     /**
      * Retorna a senha usada para autenticar o usuário.
      * Este método é utilizado pelo Spring Security. Subclasses devem
@@ -88,11 +87,11 @@ public final class Usuario implements UserDetails {
      *
      * @return A senha do usuário.
      */
+    @Override
     public String getPassword() {
         return senha;
     }
 
-    @Override
     /**
      * Retorna o nome de usuário utilizado para autenticar o usuário.
      * Este método é utilizado pelo Spring Security. Subclasses devem
@@ -100,11 +99,11 @@ public final class Usuario implements UserDetails {
      *
      * @return O nome de usuário.
      */
+    @Override
     public String getUsername() {
         return login;
     }
 
-    @Override
     /**
      * Indica se a conta do usuário não expirou.
      * Este método é utilizado pelo Spring Security. Subclasses podem
@@ -112,11 +111,11 @@ public final class Usuario implements UserDetails {
      *
      * @return true se a conta é válida (não expirada), false caso contrário.
      */
+    @Override
     public boolean isAccountNonExpired() {
         return true;
     }
 
-    @Override
     /**
      * Indica se o usuário não está bloqueado.
      * Este método é utilizado pelo Spring Security. Subclasses podem
@@ -124,11 +123,11 @@ public final class Usuario implements UserDetails {
      *
      * @return true se a conta não está bloqueada, false caso contrário.
      */
+    @Override
     public boolean isAccountNonLocked() {
         return true;
     }
 
-    @Override
     /**
      * Indica se as credenciais (senha) do usuário não expiraram.
      * Este método é utilizado pelo Spring Security. Subclasses podem
@@ -136,18 +135,19 @@ public final class Usuario implements UserDetails {
      *
      * @return true se as credenciais são válidas (não expiradas), false caso contrário.
      */
+    @Override
     public boolean isCredentialsNonExpired() {
         return true;
     }
 
-    @Override
     /**
-     * Indica se o usuário está habilitado ou desabilitado.
      * Este método é utilizado pelo Spring Security. Subclasses podem
+     * Indica se o usuário está habilitado ou desabilitado.
      * implementar lógica de habilitação/desabilitação de conta.
      *
      * @return true se o usuário está habilitado, false caso contrário.
      */
+    @Override
     public boolean isEnabled() {
         return true;
     }

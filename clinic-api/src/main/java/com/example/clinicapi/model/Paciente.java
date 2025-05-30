@@ -22,14 +22,41 @@ import lombok.Setter;
 @Table(name = "pacientes")
 public class Paciente {
 
-	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private Long id;
-	private String nome;
-	private String email;
-	private String cpf;
-	private String telefone;
-	private LocalDate dataNascimento;
-	private boolean ativo;
+    /**
+     * O identificador único do paciente.
+     */
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    /**
+     * O nome completo do paciente.
+     */
+    private String nome;
+
+    /**
+     * O endereço de email do paciente.
+     */
+    private String email;
+
+    /**
+     * O número de Cadastro de Pessoas Físicas (CPF) do paciente.
+     */
+    private String cpf;
+
+    /**
+     * O número de telefone do paciente.
+     */
+    private String telefone;
+
+    /**
+     * A data de nascimento do paciente.
+     */
+    private LocalDate dataNascimento;
+
+    /**
+     * Indica se o cadastro do paciente está ativo no sistema.
+     */
+    private boolean ativo;
 	
 }
