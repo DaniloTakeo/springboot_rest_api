@@ -8,7 +8,17 @@ on:
 jobs:
   static-analysis:
     runs-on: ubuntu-latest
+
     steps:
-      - name: code-quality test 
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
+      - name: Run code-quality checks
         working-directory: ./clinic-api
         run: mvn checkstyle:check pmd:check
