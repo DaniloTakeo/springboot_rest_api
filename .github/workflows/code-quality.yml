@@ -9,4 +9,6 @@ jobs:
   static-analysis:
     runs-on: ubuntu-latest
     steps:
-      - run: mvn checkstyle:check pmd:check
+      - name: code-quality test 
+        working-directory: ./clinic-api
+        run: mvn checkstyle:check pmd:check
