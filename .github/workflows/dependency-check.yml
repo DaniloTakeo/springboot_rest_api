@@ -25,16 +25,20 @@ jobs:
       - name: Build project (download dependencies)
         run: mvn clean install -DskipTests
 
+      - name: Download and Extract OWASP Dependency Check
+        run: |
+          wget https://github.com/jeremylong/DependencyCheck/releases/download/v8.4.0/dependency-check-8.4.0-release.zip
+          unzip dependency-check-8.4.0-release.zip
+          mv dependency-check-8.4.0 dependency-check
+
       - name: Run OWASP Dependency Check
-        uses: dependency-check/Dependency-Check_Action@main
-        with:
-          project: clinic-api
-          path: ./clinic-api
-          format: HTML
-          out: reports
-          args: >
-            --scan ./clinic-api/target
-            --enableExperimental
+        run: |
+          chmod +x dependency-check/bin/dependency-check.sh
+          ./dependency-check/bin/dependency-check.sh \
+            --project "clinic-api" \
+            --scan ./clinic-api \
+            --format "HTML" \
+            --out ./dependency-check-report
 
       - name: Upload OWASP report artifact
         uses: actions/upload-pages-artifact@v3
