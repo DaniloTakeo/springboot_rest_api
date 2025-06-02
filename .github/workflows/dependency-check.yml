@@ -8,7 +8,6 @@ on:
 jobs:
   dependency-check:
     runs-on: ubuntu-latest
-
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -25,25 +24,40 @@ jobs:
 
       - name: Download and Extract OWASP Dependency Check
         run: |
-          wget https://github.com/jeremylong/DependencyCheck/releases/download/v8.4.0/dependency-check-8.4.0-release.zip
-          unzip dependency-check-8.4.0-release.zip
-          # O unzip cria uma pasta como "dependency-check-8.4.0"
-          # Vamos renomeá-la para algo mais curto e acessível na raiz do workspace
-          mv dependency-check-8.4.0 dependency-check-cli
+          OWASP_DC_VERSION="8.4.0" # Use uma variável para a versão
+          wget https://github.com/jeremylong/DependencyCheck/releases/download/v${OWASP_DC_VERSION}/dependency-check-${OWASP_DC_VERSION}-release.zip
+          unzip dependency-check-${OWASP_DC_VERSION}-release.zip
+          
+          echo "Conteúdo do diretório atual após unzip:"
           ls -la
-
+          echo "Procurando diretório descompactado:"
+          find . -maxdepth 2 -type d -name "dependency-check-*"
+          
+          if [ -d "dependency-check-${OWASP_DC_VERSION}" ]; then
+              mv dependency-check-${OWASP_DC_VERSION} dependency-check-cli
+          elif [ -d "dependency-check-${OWASP_DC_VERSION}-release" ]; then
+              mv dependency-check-${OWASP_DC_VERSION}-release dependency-check-cli
+          else
+              echo "Erro: Não foi possível encontrar o diretório descompactado do Dependency-Check."
+              # Opcional: listar o conteúdo para ajudar a depurar
+              ls -F
+              exit 1 # Falha a etapa se o diretório não for encontrado
+          fi
+          
+          echo "Conteúdo do diretório após renomear:"
+          ls -la dependency-check-cli # Verifique se a pasta foi criada e o conteúdo dela
+          
       - name: Run OWASP Dependency Check
         run: |
-          # O Dependency Check CLI agora está em ./dependency-check-cli
           chmod +x ./dependency-check-cli/bin/dependency-check.sh
           ./dependency-check-cli/bin/dependency-check.sh \
             --project "clinic-api" \
             --scan ./clinic-api \
             --format "HTML" \
-            --out ./owasp-dependency-check-report # A pasta de saída será criada na raiz do workspace
+            --out ./owasp-dependency-check-report
 
       - name: Upload OWASP report artifact
-        uses: actions/upload-pages-artifact@v3
+        uses: actions/upload-artifact@v3
         with:
           name: dependency-check-report
           path: owasp-dependency-check-report/dependency-check-report.html
