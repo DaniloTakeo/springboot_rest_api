@@ -7,8 +7,8 @@ on:
 
 jobs:
   dependency-check:
-    name: OWASP Dependency Check
     runs-on: ubuntu-latest
+
     steps:
       - name: Checkout source code
         uses: actions/checkout@v4
@@ -19,15 +19,21 @@ jobs:
           distribution: 'temurin'
           java-version: '17'
 
-      - name: Cache OWASP dependency-check data
-        uses: actions/cache@v3
-        with:
-          path: ~/.dependency-check
-          key: ${{ runner.os }}-owasp-cache
+      - name: Download OWASP Dependency Check
+        run: |
+          wget https://github.com/jeremylong/DependencyCheck/releases/download/v8.4.0/dependency-check-8.4.0-release.zip
+          unzip dependency-check-8.4.0-release.zip -d dependency-check
 
-      - name: Run OWASP Dependency Check
-        uses: dependency-check/Dependency-Check_Action@main
+      - name: Run Dependency Check
+        run: |
+          ./dependency-check/bin/dependency-check.sh \
+            --project "clinic-api" \
+            --scan ./clinic-api \
+            --format "HTML" \
+            --out ./dependency-check-report
+
+      - name: Upload HTML report as artifact
+        uses: actions/upload-artifact@v3
         with:
-          project: 'clinic-api'
-          path: './clinic-api'
-          format: 'HTML'
+          name: dependency-check-report
+          path: dependency-check-report
