@@ -1,0 +1,33 @@
+name: OWASP Dependency Check
+
+on:
+  pull_request:
+  push:
+    branches: [ main ]
+
+jobs:
+  dependency-check:
+    name: OWASP Dependency Check
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout source code
+        uses: actions/checkout@v4
+
+      - name: Set up Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
+      - name: Cache OWASP dependency-check data
+        uses: actions/cache@v3
+        with:
+          path: ~/.dependency-check
+          key: ${{ runner.os }}-owasp-cache
+
+      - name: Run OWASP Dependency Check
+        uses: dependency-check/Dependency-Check_Action@main
+        with:
+          project: 'clinic-api'
+          path: './clinic-api'
+          format: 'HTML'
