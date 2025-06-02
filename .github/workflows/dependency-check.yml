@@ -22,6 +22,9 @@ jobs:
         run: mvn clean install -DskipTests
         working-directory: clinic-api
 
+      - name: Clean OWASP Dependency Check Data Directory (Important!)
+        run: rm -rf ~/.dependency-check
+
       - name: Download and Extract OWASP Dependency Check
         run: |
           OWASP_DC_VERSION="8.4.0"
@@ -34,7 +37,7 @@ jobs:
           echo "Verificando se a pasta 'dependency-check' existe:"
           if [ -d "dependency-check" ]; then
               echo "Diretório 'dependency-check' encontrado com sucesso."
-              ls -la dependency-check # Listar o conteúdo da pasta para confirmação
+              ls -la dependency-check
           else
               echo "Erro crítico: Diretório 'dependency-check' não encontrado após unzip."
               exit 1
@@ -47,7 +50,8 @@ jobs:
             --project "clinic-api" \
             --scan ./clinic-api \
             --format "HTML" \
-            --out ./owasp-dependency-check-report
+            --out ./owasp-dependency-check-report \
+            --noupdate
 
       - name: Upload OWASP report artifact
         uses: actions/upload-artifact@v4
