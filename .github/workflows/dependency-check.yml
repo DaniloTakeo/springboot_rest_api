@@ -23,11 +23,11 @@ jobs:
         working-directory: clinic-api
 
       - name: Clean OWASP Dependency Check Data Directory (Important!)
-        run: rm -rf ~/.dependency-check
+        run: rm -rf ~/.dependency-check 
 
       - name: Download and Extract OWASP Dependency Check
         run: |
-          OWASP_DC_VERSION="8.4.0"
+          OWASP_DC_VERSION="9.0.9" # Considere manter a versão mais recente, se não houver problemas com ela
           wget https://github.com/jeremylong/DependencyCheck/releases/download/v${OWASP_DC_VERSION}/dependency-check-${OWASP_DC_VERSION}-release.zip
           unzip dependency-check-${OWASP_DC_VERSION}-release.zip
           
@@ -50,8 +50,7 @@ jobs:
             --project "clinic-api" \
             --scan ./clinic-api \
             --format "HTML" \
-            --out ./owasp-dependency-check-report \
-            --noupdate
+            --out ./owasp-dependency-check-report
 
       - name: Upload OWASP report artifact
         uses: actions/upload-artifact@v4
