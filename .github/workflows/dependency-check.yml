@@ -8,9 +8,6 @@ on:
 jobs:
   dependency-check:
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: clinic-api
 
     steps:
       - name: Checkout code
@@ -24,24 +21,29 @@ jobs:
 
       - name: Build project (download dependencies)
         run: mvn clean install -DskipTests
+        working-directory: clinic-api
 
       - name: Download and Extract OWASP Dependency Check
         run: |
           wget https://github.com/jeremylong/DependencyCheck/releases/download/v8.4.0/dependency-check-8.4.0-release.zip
           unzip dependency-check-8.4.0-release.zip
+          # O unzip cria uma pasta como "dependency-check-8.4.0"
+          # Vamos renomeá-la para algo mais curto e acessível na raiz do workspace
+          mv dependency-check-8.4.0 dependency-check-cli
           ls -la
 
       - name: Run OWASP Dependency Check
         run: |
-          chmod +x dependency-check/bin/dependency-check.sh
-          ./dependency-check/bin/dependency-check.sh \
+          # O Dependency Check CLI agora está em ./dependency-check-cli
+          chmod +x ./dependency-check-cli/bin/dependency-check.sh
+          ./dependency-check-cli/bin/dependency-check.sh \
             --project "clinic-api" \
             --scan ./clinic-api \
             --format "HTML" \
-            --out ./dependency-check-report
+            --out ./owasp-dependency-check-report # A pasta de saída será criada na raiz do workspace
 
       - name: Upload OWASP report artifact
         uses: actions/upload-pages-artifact@v3
         with:
           name: dependency-check-report
-          path: clinic-api/reports
+          path: owasp-dependency-check-report/dependency-check-report.html
