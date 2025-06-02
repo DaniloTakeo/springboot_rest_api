@@ -1,36 +1,43 @@
 name: OWASP Dependency Check
 
 on:
-  pull_request:
   push:
     branches: [ main ]
+  pull_request:
 
 jobs:
   dependency-check:
-    name: OWASP Dependency Check
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: clinic-api
+
     steps:
-      - name: Checkout source code
+      - name: Checkout code
         uses: actions/checkout@v4
 
       - name: Set up Java
         uses: actions/setup-java@v4
-        id: setup-java-step 
         with:
-          distribution: 'temurin'
-          java-version: '17' 
+          distribution: temurin
+          java-version: 17
 
-      - name: Cache OWASP dependency-check data
-        uses: actions/cache@v3
-        with:
-          path: ~/.dependency-check
-          key: ${{ runner.os }}-owasp-cache
+      - name: Build project (download dependencies)
+        run: mvn clean install -DskipTests
 
       - name: Run OWASP Dependency Check
         uses: dependency-check/Dependency-Check_Action@main
         with:
-          project: 'clinic-api'
-          path: './clinic-api'
-          format: 'HTML'
-        env:
-          JAVA_HOME: ${{ steps.setup-java-step.outputs.java-home }}
+          project: clinic-api
+          path: ./clinic-api
+          format: HTML
+          out: reports
+          args: >
+            --scan ./clinic-api/target
+            --enableExperimental
+
+      - name: Upload OWASP report artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          name: dependency-check-report
+          path: clinic-api/reports
