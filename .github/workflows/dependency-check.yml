@@ -36,10 +36,10 @@ jobs:
             --project "clinic-api" \
             --scan ./clinic-api \
             --format "HTML" \
-            --out ./dependency-check-report
+            --out ./owasp-dependency-check-report
 
       - name: Upload HTML report as artifact
         uses: actions/upload-artifact@v4
         with:
           name: dependency-check-report
-          path: dependency-check-report
+          path: owasp-dependency-check-report
