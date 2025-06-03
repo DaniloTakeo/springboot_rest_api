@@ -57,4 +57,20 @@ jobs:
           token: ${{ secrets.CODECOV_TOKEN }}
           files: clinic-api/target/site/jacoco/jacoco.xml
           fail_ci_if_error: true
+      
+      - name: Cache SonarCloud packages
+        uses: actions/cache@v3
+        with:
+          path: ~/.sonar/cache
+          key: ${{ runner.os }}-sonar
+          restore-keys: ${{ runner.os }}-sonar
           
+      - name: SonarCloud Scan
+        uses: SonarSource/sonarcloud-github-action@v2
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+        with:
+          args: >
+            -Dsonar.projectKey=DaniloTakeo_springboot_rest_api
+            -Dsonar.organization=danilotakeo
+            -Dsonar.host.url=https://sonarcloud.io
