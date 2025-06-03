@@ -1,0 +1,32 @@
+name: Test Coverage
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+
+jobs:
+  test-coverage:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: clinic-api
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 17
+
+      - name: Run tests with JaCoCo
+        run: mvn clean verify
+
+      - name: Upload JaCoCo report
+        uses: actions/upload-artifact@v3
+        with:
+          name: jacoco-report
+          path: clinic-api/target/site/jacoco
