@@ -44,3 +44,15 @@ jobs:
       - name: Run tests with Maven
         working-directory: ./clinic-api
         run: mvn clean verify -Dspring.profiles.active=test
+
+      - name: Upload JaCoCo report
+        uses: actions/upload-artifact@v4
+        with:
+          name: jacoco-report
+          path: clinic-api/target/site/jacoco
+
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v4
+        with:
+          files: clinic-api/target/site/jacoco/jacoco.xml
+          fail_ci_if_error: true
