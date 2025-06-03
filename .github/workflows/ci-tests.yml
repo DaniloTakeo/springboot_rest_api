@@ -57,3 +57,4 @@ jobs:
           token: ${{ secrets.CODECOV_TOKEN }}
           files: clinic-api/target/site/jacoco/jacoco.xml
           fail_ci_if_error: true
+          
