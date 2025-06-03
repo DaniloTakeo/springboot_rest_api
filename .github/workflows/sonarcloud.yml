@@ -36,6 +36,6 @@ jobs:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         with:
           args: >
-            -Dsonar.projectKey=https://github.com/DaniloTakeo/springboot_rest_api
-            -Dsonar.organization=https://sonarcloud.io/organizations/danilotakeo
+            -Dsonar.projectKey=DaniloTakeo_springboot_rest_api
+            -Dsonar.organization=danilotakeo
             -Dsonar.host.url=https://sonarcloud.io
