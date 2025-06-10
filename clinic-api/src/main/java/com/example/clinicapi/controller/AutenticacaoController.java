@@ -1,6 +1,10 @@
 package com.example.clinicapi.controller;
 
+import java.net.URI;
+
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -13,6 +17,7 @@ import com.example.clinicapi.dto.DadosAutenticacaoDTO;
 import com.example.clinicapi.dto.TokenDTO;
 import com.example.clinicapi.infra.security.JwtService;
 import com.example.clinicapi.model.Usuario;
+import com.example.clinicapi.service.UsuarioService;
 
 import jakarta.validation.Valid;
 
@@ -25,6 +30,12 @@ public class AutenticacaoController {
      */
     @Autowired
     private AuthenticationManager manager;
+
+    /**
+     * Serviço responsável pelo cadastro de novos usuários.
+     */
+    @Autowired
+    private UsuarioService usuarioService;
 
     /**
      * Serviço para manipulação de tokens JWT.
@@ -49,5 +60,37 @@ public class AutenticacaoController {
         var usuario = (Usuario) auth.getPrincipal();
         var token = jwtService.generateToken(usuario.getLogin());
         return new TokenDTO(token);
+    }
+
+    /**
+     * Cadastra um novo usuário no sistema, atribuindo o papel padrão
+     * {@code ROLE_USER}.
+     * A senha é automaticamente criptografada. Caso o login já esteja em uso,
+     * uma resposta 409 (Conflict) será retornada.
+     * Se o cadastro for bem-sucedido,
+     * um token JWT é gerado e retornado no corpo da resposta, juntamente com o
+     * cabeçalho {@code Location} apontando para o recurso recém-criado.
+     *
+     * @param dados Um DTO contendo o login e a senha do novo usuário.
+     * @return Um {@code ResponseEntity} com status 201 (Created)
+     * e token JWT no corpo,
+     *         ou 409 (Conflict) se o login já estiver em uso.
+     */
+    @PostMapping("/register")
+    public ResponseEntity<TokenDTO> cadastrarUsuarioComToken(
+            @RequestBody @Valid final DadosAutenticacaoDTO dados) {
+
+        if (usuarioService.loginJaExiste(dados.login())) {
+            return ResponseEntity.status(HttpStatus.CONFLICT).build();
+        }
+
+        usuarioService.cadastrarUsuario(dados);
+
+        final URI location = URI.create("/auth/" + dados.login());
+        final String token = jwtService.generateToken(dados.login());
+
+        return ResponseEntity
+                .created(location)
+                .body(new TokenDTO(token));
     }
 }

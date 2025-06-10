@@ -36,4 +36,15 @@ public class UsuarioService {
         final Usuario usuario = new Usuario(dados.login(), senhaCriptografada);
         repository.save(usuario);
     }
+
+    /**
+     * Verifica se já existe um usuário cadastrado com o login informado.
+     *
+     * @param login O nome de login a ser verificado.
+     * @return {@code true} se o login já estiver em uso,
+     * {@code false} caso contrário.
+     */
+    public boolean loginJaExiste(final String login) {
+        return repository.existsByLogin(login);
+    }
 }

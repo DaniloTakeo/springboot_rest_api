@@ -24,4 +24,13 @@ public interface UsuarioRepository extends JpaRepository<Usuario, Long> {
      * se encontrado, ou um Optional vazio.
      */
     Optional<Usuario> findByLogin(String login);
+
+    /**
+     * Verifica se existe um usuário com o login especificado.
+     *
+     * @param login O login a ser pesquisado.
+     * @return {@code true} se existir um usuário com o login fornecido,
+     *         {@code false} caso contrário.
+     */
+    boolean existsByLogin(String login);
 }
