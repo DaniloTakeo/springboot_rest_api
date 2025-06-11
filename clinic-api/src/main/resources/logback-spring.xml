@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration scan="true">
+
+    <include resource="org/springframework/boot/logging/logback/base.xml"/>
+
+    <property name="APP_NAME" value="clinic-api" />
+
+    <root level="INFO">
+        <appender-ref ref="CONSOLE_JSON" />
+        <appender-ref ref="LOKI" />
+    </root>
+
+    <appender name="CONSOLE_JSON" class="net.logstash.logback.appender.LoggingEventCompositeJsonEncoderAppender">
+        <encoder class="net.logstash.logback.encoder.LoggingEventCompositeJsonEncoder">
+            <providers>
+                <timestamp>
+                    <fieldName>timestamp</fieldName>
+                </timestamp>
+                <logLevel />
+                <loggerName />
+                <threadName />
+                <message />
+                <arguments />
+                <stackTrace />
+                <mdc />
+                <context />
+            </providers>
+        </encoder>
+    </appender>
+
+    <appender name="LOKI" class="net.logstash.logback.appender.LogstashHttpAppender">
+        <url>http://localhost:3100/loki/api/v1/push</url>
+        <encoder class="net.logstash.logback.encoder.LoggingEventJsonEncoder">
+            <provider class="net.logstash.logback.provider.LogstashEncoderJsonProviders">
+                <timestamp />
+                <pattern>
+                    <pattern>
+                        {
+                        "app": "${APP_NAME}",
+                        "level": "%level",
+                        "thread": "%thread",
+                        "logger": "%logger",
+                        "message": "%message",
+                        "exception": "%ex"
+                        }
+                    </pattern>
+                </pattern>
+            </provider>
+        </encoder>
+    </appender>
+
+</configuration>

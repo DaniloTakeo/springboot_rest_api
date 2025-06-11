@@ -2,6 +2,8 @@ package com.example.clinicapi.controller;
 
 import java.net.URI;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -24,7 +26,17 @@ import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping("/pacientes")
-public final class PacienteController { // Torne a classe final
+public final class PacienteController {
+
+    /**
+     * Logger estático utilizado para registrar mensagens de log relacionadas à
+     * execução da {@link PacienteController}, como requisições recebidas,
+     * operações bem-sucedidas, falhas e outras informações relevantes
+     * durante o ciclo de vida da requisição.
+     * <p>Utiliza a implementação do SLF4J fornecida pelo Logback.</p>
+     */
+    private static final Logger LOGGER = LoggerFactory
+            .getLogger(PacienteController.class);
 
     /**
      * Serviço responsável pela lógica de negócios para operações com pacientes.
@@ -41,6 +53,10 @@ public final class PacienteController { // Torne a classe final
     @GetMapping
     public ResponseEntity<Page<PacienteDTO>> listarTodos(
             @PageableDefault final Pageable pageable) {
+        LOGGER.info("Requisição recebida para listar "
+                + "todos os pacientes - página: {}, tamanho: {}",
+                pageable.getPageNumber(), pageable.getPageSize());
+
         return ResponseEntity.ok(pacienteService.findAll(pageable));
     }
 
@@ -53,6 +69,10 @@ public final class PacienteController { // Torne a classe final
     @GetMapping("/ativos")
     public ResponseEntity<Page<PacienteDTO>> listarAtivos(
             @PageableDefault final Pageable pageable) {
+        LOGGER.info("Requisição recebida para listar "
+                + "pacientes ativos - página: {}, tamanho: {}",
+                pageable.getPageNumber(), pageable.getPageSize());
+
         return ResponseEntity.ok(pacienteService.findAllAtivos(pageable));
     }
 
@@ -66,6 +86,8 @@ public final class PacienteController { // Torne a classe final
     @GetMapping("/{id}")
     public ResponseEntity<PacienteDTO> buscarPorId(
             @PathVariable final Long id) {
+        LOGGER.info("Buscando paciente pelo ID: {}", id);
+
         return pacienteService.findById(id)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
@@ -82,6 +104,8 @@ public final class PacienteController { // Torne a classe final
     public ResponseEntity<PacienteDTO> criar(
             @RequestBody @Valid final PacienteDTO pacienteDTO,
             final UriComponentsBuilder uriBuilder) {
+        LOGGER.info("Criando novo paciente: {}", pacienteDTO);
+
         final PacienteDTO pacienteSalvo = pacienteService.save(pacienteDTO);
         final URI location = uriBuilder
                 .path("/pacientes/{id}")
@@ -102,6 +126,8 @@ public final class PacienteController { // Torne a classe final
     public ResponseEntity<PacienteDTO> atualizar(
             @PathVariable final Long id,
             @RequestBody final PacienteDTO dto) {
+        LOGGER.info("Atualizando paciente ID {} com dados: {}", id, dto);
+
         return ResponseEntity.ok(pacienteService.update(id, dto));
     }
 
@@ -113,7 +139,12 @@ public final class PacienteController { // Torne a classe final
      */
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deletar(@PathVariable final Long id) {
+        LOGGER.info("Deletando (inativando) paciente com ID: {}", id);
+
         pacienteService.deleteById(id);
+
+        LOGGER.info("Paciente com ID {} inativado com sucesso", id);
+
         return ResponseEntity.noContent().build();
     }
 }
