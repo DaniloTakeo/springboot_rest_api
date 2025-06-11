@@ -3,6 +3,8 @@ package com.example.clinicapi.dto;
 import java.io.Serializable;
 import java.time.LocalDate;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -31,6 +33,7 @@ public record PacienteDTO(
 
         @NotNull(message = "Data de nascimento é obrigatória")
         @Past(message = "Data de nascimento deve ser no passado")
+        @JsonFormat(pattern = "yyyy-MM-dd")
         LocalDate dataNascimento,
         Boolean ativo
         ) implements Serializable { }
