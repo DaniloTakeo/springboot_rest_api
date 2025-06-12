@@ -22,6 +22,20 @@ services:
     volumes:
       - redis_data:/data
     command: ["redis-server", "--appendonly", "yes"]
+
+  clinic-api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: clinic_api
+    ports:
+      - "8080:8080"
+    depends_on:
+      - mysql
+      - redis
+    networks:
+      - clinic-network
+      - observability
     
   prometheus:
     image: prom/prometheus
@@ -43,6 +57,7 @@ services:
       - GF_SECURITY_ADMIN_PASSWORD=admin
     networks:
       - observability
+
   loki:
     image: grafana/loki:2.9.4
     container_name: loki
@@ -57,7 +72,8 @@ services:
     container_name: promtail
     volumes:
       - ./promtail/promtail-config.yml:/etc/promtail/config-local.yml
-      - ./logs:/app/logs
+      - /var/lib/docker/containers:/var/lib/docker/containers:ro
+      - /etc/machine-id:/etc/machine-id:ro
     command: -config.file=/etc/promtail/config-local.yml
     networks:
       - observability

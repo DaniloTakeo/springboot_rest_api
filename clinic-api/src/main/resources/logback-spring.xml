@@ -3,56 +3,23 @@
 
     <include resource="org/springframework/boot/logging/logback/base.xml"/>
 
-    <property name="APP_NAME" value="minha-api" />
-    <property name="LOKI_URL" value="http://localhost:3100/loki/api/v1/push" />
-
-    <!-- Console JSON log -->
     <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
         <encoder class="net.logstash.logback.encoder.LoggingEventCompositeJsonEncoder">
             <providers>
-                <timestamp>
-                    <fieldName>timestamp</fieldName>
-                </timestamp>
-                <logLevel />
-                <loggerName />
-                <threadName />
-                <message />
-                <arguments />
-                <stackTrace />
-                <mdc />
-                <context />
+                <timestamp/>
+                <logLevel/>
+                <loggerName/>
+                <threadName/>
+                <message/>
+                <arguments/>
+                <stackTrace/>
+                <mdc/>
             </providers>
         </encoder>
     </appender>
 
-    <appender name="LOKI" class="net.logstash.logback.appender.LogstashTcpSocketAppender">
-        <!-- ✅ Aqui está a correção -->
-        <destination>loki:3100</destination>
-
-        <encoder class="net.logstash.logback.encoder.LoggingEventCompositeJsonEncoder">
-            <providers>
-                <timestamp>
-                    <fieldName>@timestamp</fieldName>
-                </timestamp>
-                <loggerName />
-                <pattern>
-                    <pattern>
-                        {
-                            "level": "%level",
-                            "thread": "%thread",
-                            "message": "%message",
-                            "context": "%mdc"
-                        }
-                    </pattern>
-                </pattern>
-            </providers>
-        </encoder>
-    </appender>
-
-    <!-- Root logger -->
     <root level="INFO">
-        <appender-ref ref="CONSOLE" />
-        <appender-ref ref="LOKI" />
+        <appender-ref ref="CONSOLE"/>
     </root>
 
 </configuration>
