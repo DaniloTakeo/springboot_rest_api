@@ -39,6 +39,19 @@ public final class PacienteController {
             .getLogger(PacienteController.class);
 
     /**
+     * Valor máximo permitido para o tamanho da página de resultados.
+     * Utilizado para evitar requisições com paginações excessivamente grandes.
+     */
+    private static final int TAMANHO_MAXIMO_PAGINA = 100;
+
+    /**
+     * Valor mínimo permitido para o tamanho da página de resultados.
+     * Garante que sempre haja ao menos um item por página.
+     */
+    private static final int TAMANHO_MINIMO_PAGINA = 1;
+
+
+    /**
      * Serviço responsável pela lógica de negócios para operações com pacientes.
      */
     @Autowired
@@ -54,7 +67,8 @@ public final class PacienteController {
     public ResponseEntity<Page<PacienteDTO>> listarTodos(
             @PageableDefault final Pageable pageable) {
         int page = Math.max(0, pageable.getPageNumber());
-        int size = Math.min(Math.max(1, pageable.getPageSize()), 100);
+        int size = Math.min(Math.max(TAMANHO_MINIMO_PAGINA,
+                pageable.getPageSize()), TAMANHO_MAXIMO_PAGINA);
 
         LOGGER.info("Listando pacientes - página: {}, tamanho: {}", page, size);
 

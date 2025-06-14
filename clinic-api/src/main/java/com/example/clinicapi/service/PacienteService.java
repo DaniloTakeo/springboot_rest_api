@@ -35,6 +35,19 @@ public class PacienteService {
             .getLogger(PacienteService.class);
 
     /**
+     * Valor máximo permitido para o tamanho da página de resultados.
+     * Utilizado para limitar a quantidade de
+     * dados retornados em uma única requisição.
+     */
+    private static final int TAMANHO_MAXIMO_PAGINA = 100;
+
+    /**
+     * Valor mínimo permitido para o tamanho da página de resultados.
+     * Garante que ao menos um item será retornado por página.
+     */
+    private static final int TAMANHO_MINIMO_PAGINA = 1;
+
+    /**
      * Repositório para operações de persistência de pacientes.
      */
     private final PacienteRepository pacienteRepository;
@@ -52,11 +65,12 @@ public class PacienteService {
      */
     public Page<PacienteDTO> findAll(final Pageable pageable) {
         int page = Math.max(0, pageable.getPageNumber());
-        int size = Math.min(Math.max(1, pageable.getPageSize()), 100);
+        int size = Math.min(Math.max(TAMANHO_MINIMO_PAGINA,
+                pageable.getPageSize()), TAMANHO_MAXIMO_PAGINA);
         String sort = pageable.getSort().toString().replaceAll("[\r\n]", "");
 
-        LOGGER.debug("Buscando pacientes - página: {}, tamanho: {}, ordenação: {}",
-                page, size, sort);
+        LOGGER.debug("Buscando pacientes - página: {},"
+                + "tamanho: {}, ordenação: {}", page, size, sort);
 
         return pacienteRepository.findAll(pageable)
                 .map(pacienteMapper::toDTO);

@@ -29,8 +29,14 @@ public class SecurityConfig {
      * Define as permissões de acesso aos endpoints,
      * gerenciamento de sessão e adição de filtros customizados.
      *
-     * @param http O objeto HttpSecurity para configurar a segurança web.
-     * @return A SecurityFilterChain configurada.
+     * @param http O objeto {@link HttpSecurity}
+     * usado para configurar a segurança da aplicação.
+     * @param securityFilter O filtro de segurança customizado
+     * que intercepta requisições para validação do JWT.
+     * @param usuarioService Serviço responsável por autenticar
+     * e carregar os dados do usuário.
+     * @return A {@link SecurityFilterChain}
+     * configurada com as regras definidas.
      * @throws Exception Se ocorrer um erro durante a configuração.
      */
     @Bean
@@ -56,7 +62,8 @@ public class SecurityConfig {
                 ).permitAll()
                 .anyRequest().authenticated()
             )
-            .addFilterBefore(securityFilter, UsernamePasswordAuthenticationFilter.class);
+            .addFilterBefore(securityFilter,
+                    UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }
@@ -66,9 +73,11 @@ public class SecurityConfig {
      * Utiliza o serviço de detalhes do usuário
      * e o codificador de senhas para a autenticação.
      *
-     * @param http O objeto HttpSecurity
-     * para obter o AuthenticationManagerBuilder.
-     * @return O AuthenticationManager configurado.
+     * @param http O objeto {@link HttpSecurity} utilizado
+     * para acessar o {@link AuthenticationManagerBuilder}.
+     * @param usuarioService Serviço responsável por carregar
+     * os detalhes do usuário para autenticação.
+     * @return O {@link AuthenticationManager} configurado.
      * @throws Exception Se ocorrer um erro durante a configuração.
      */
     @Bean
