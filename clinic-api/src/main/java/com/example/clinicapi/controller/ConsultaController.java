@@ -2,7 +2,6 @@ package com.example.clinicapi.controller;
 
 import java.net.URI;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
@@ -21,16 +20,17 @@ import com.example.clinicapi.dto.ConsultaDTO;
 import com.example.clinicapi.service.ConsultaService;
 
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 
 @RestController
 @RequestMapping("/consultas")
+@RequiredArgsConstructor
 public class ConsultaController {
 
     /**
      * Serviço responsável pela lógica de negócios das operações de consulta.
      */
-    @Autowired
-    private ConsultaService consultaService;
+    private final ConsultaService consultaService;
 
     /**
      * Agenda uma nova consulta.
@@ -97,7 +97,7 @@ public class ConsultaController {
             @PathVariable final Long id,
             @RequestBody final ConsultaDTO consultaDTO) {
         return consultaService.updateConsulta(id, consultaDTO)
-                .map(updatedConsulta -> ResponseEntity.ok(updatedConsulta))
+                .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }
 

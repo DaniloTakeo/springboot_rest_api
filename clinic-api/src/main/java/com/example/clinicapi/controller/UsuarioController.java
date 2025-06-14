@@ -1,6 +1,5 @@
 package com.example.clinicapi.controller;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -11,16 +10,17 @@ import com.example.clinicapi.dto.DadosAutenticacaoDTO;
 import com.example.clinicapi.service.UsuarioService;
 
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 
 @RestController
 @RequestMapping("/usuarios")
-public final class UsuarioController { // Torne a classe final
+@RequiredArgsConstructor
+public final class UsuarioController {
 
     /**
      * Serviço responsável pela lógica de negócios para operações de usuário.
      */
-    @Autowired
-    private UsuarioService service;
+    private final UsuarioService service;
 
     /**
      * Cadastra um novo usuário no sistema.
@@ -30,7 +30,7 @@ public final class UsuarioController { // Torne a classe final
      * @return ResponseEntity com status 200 OK após o cadastro.
      */
     @PostMapping
-    public ResponseEntity<?> cadastrar(
+    public ResponseEntity<Void> cadastrar(
             @RequestBody @Valid final DadosAutenticacaoDTO dados) {
         service.cadastrarUsuario(dados);
         return ResponseEntity.ok().build();

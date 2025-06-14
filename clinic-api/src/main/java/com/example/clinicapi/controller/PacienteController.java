@@ -53,9 +53,10 @@ public final class PacienteController {
     @GetMapping
     public ResponseEntity<Page<PacienteDTO>> listarTodos(
             @PageableDefault final Pageable pageable) {
-        LOGGER.info("Requisição recebida para listar "
-                + "todos os pacientes - página: {}, tamanho: {}",
-                pageable.getPageNumber(), pageable.getPageSize());
+        int page = Math.max(0, pageable.getPageNumber());
+        int size = Math.min(Math.max(1, pageable.getPageSize()), 100);
+
+        LOGGER.info("Listando pacientes - página: {}, tamanho: {}", page, size);
 
         return ResponseEntity.ok(pacienteService.findAll(pageable));
     }

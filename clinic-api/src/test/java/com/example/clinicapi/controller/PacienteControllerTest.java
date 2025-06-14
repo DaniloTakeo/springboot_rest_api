@@ -40,7 +40,7 @@ import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 @SpringBootTest
 @AutoConfigureMockMvc
 @ActiveProfiles("test")
-public class PacienteControllerTest {
+class PacienteControllerTest {
 
 	@Autowired
     private MockMvc mockMvc;

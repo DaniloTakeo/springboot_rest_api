@@ -1,6 +1,5 @@
 package com.example.clinicapi.service;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -8,18 +7,20 @@ import org.springframework.stereotype.Service;
 
 import com.example.clinicapi.repository.UsuarioRepository;
 
+import lombok.RequiredArgsConstructor;
+
 /**
  * Serviço responsável por carregar detalhes do usuário para autenticação
  * no Spring Security. Implementa a interface {@link UserDetailsService}.
  */
 @Service
+@RequiredArgsConstructor
 public class AutenticacaoService implements UserDetailsService {
 
     /**
      * Repositório para operações de acesso a dados de usuários.
      */
-    @Autowired
-    private UsuarioRepository repository;
+    private final UsuarioRepository repository;
 
     /**
      * Carrega os detalhes do usuário pelo seu nome de usuário (login).

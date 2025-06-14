@@ -85,13 +85,15 @@ class MedicoServiceTest {
     void deveLancarExcecaoQuandoMedicoNaoExistir() {
         when(medicoRepository.findById(1L)).thenReturn(Optional.empty());
 
-        Exception exception = assertThrows(EntityNotFoundException.class, () -> {
-            medicoService.findById(1L).orElseThrow(EntityNotFoundException::new);
-        });
+        Exception exception = assertThrows(EntityNotFoundException.class, () -> buscarMedicoOuFalhar());
 
         assertEquals("Médico não encontrado", exception.getMessage());
     }
-    
+
+    private MedicoDTO buscarMedicoOuFalhar() {
+        return medicoService.findById(1L).orElseThrow(() -> new EntityNotFoundException("Médico não encontrado"));
+    }
+
     @Test
     void deveCriarMedico() {
         MedicoDTO dto = new MedicoDTO(1L, "Dr. Mock", "dr@mock.com", "1111", "99999999", Especialidade.CARDIOLOGIA, true);

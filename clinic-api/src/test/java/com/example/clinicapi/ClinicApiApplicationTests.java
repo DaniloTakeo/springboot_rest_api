@@ -10,6 +10,7 @@ class ClinicApiApplicationTests {
 
 	@Test
 	void contextLoads() {
+	    // Teste intencionalmente vazio para verificar se o contexto da aplicação carrega corretamente
 	}
 
 }

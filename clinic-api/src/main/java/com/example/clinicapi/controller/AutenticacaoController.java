@@ -2,7 +2,6 @@ package com.example.clinicapi.controller;
 
 import java.net.URI;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -20,28 +19,27 @@ import com.example.clinicapi.model.Usuario;
 import com.example.clinicapi.service.UsuarioService;
 
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 
 @RestController
 @RequestMapping("/auth")
+@RequiredArgsConstructor
 public class AutenticacaoController {
 
     /**
      * Gerenciador de autenticação para processar as requisições de login.
      */
-    @Autowired
-    private AuthenticationManager manager;
+    private final AuthenticationManager manager;
 
     /**
      * Serviço responsável pelo cadastro de novos usuários.
      */
-    @Autowired
-    private UsuarioService usuarioService;
+    private final UsuarioService usuarioService;
 
     /**
      * Serviço para manipulação de tokens JWT.
      */
-    @Autowired
-    private JwtService jwtService;
+    private final JwtService jwtService;
 
     /**
      * Realiza a autenticação de um usuário e gera um token JWT.

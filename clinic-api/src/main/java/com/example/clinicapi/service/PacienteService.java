@@ -51,8 +51,12 @@ public class PacienteService {
      * @return Uma página de PacienteDTOs.
      */
     public Page<PacienteDTO> findAll(final Pageable pageable) {
-        LOGGER.debug("Buscando todos os pacientes com paginação: {}",
-                pageable);
+        int page = Math.max(0, pageable.getPageNumber());
+        int size = Math.min(Math.max(1, pageable.getPageSize()), 100);
+        String sort = pageable.getSort().toString().replaceAll("[\r\n]", "");
+
+        LOGGER.debug("Buscando pacientes - página: {}, tamanho: {}, ordenação: {}",
+                page, size, sort);
 
         return pacienteRepository.findAll(pageable)
                 .map(pacienteMapper::toDTO);

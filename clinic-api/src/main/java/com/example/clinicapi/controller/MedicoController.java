@@ -2,7 +2,6 @@ package com.example.clinicapi.controller;
 
 import java.net.URI;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
@@ -22,16 +21,17 @@ import com.example.clinicapi.model.Especialidade;
 import com.example.clinicapi.service.MedicoService;
 
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 
 @RestController
 @RequestMapping("/medicos")
+@RequiredArgsConstructor
 public final class MedicoController {
 
     /**
      * Serviço responsável pela lógica de negócios das operações de médico.
      */
-    @Autowired
-    private MedicoService medicoService;
+    private final MedicoService medicoService;
 
     /**
      * Lista todos os médicos ativos e inativos com paginação.
