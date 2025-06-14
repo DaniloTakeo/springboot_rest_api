@@ -97,8 +97,14 @@ public class PacienteService {
      * @return Uma página de PacienteDTOs representando pacientes ativos.
      */
     public Page<PacienteDTO> findAllAtivos(final Pageable pageable) {
-        LOGGER.debug("Buscando pacientes ativos com paginação: {}",
-                pageable);
+        int page = Math.max(0, pageable.getPageNumber());
+        int size = Math.min(Math.max(TAMANHO_MINIMO_PAGINA,
+                pageable.getPageSize()), TAMANHO_MAXIMO_PAGINA);
+        String sort = pageable.getSort().toString().replaceAll("[\r\n]", "");
+
+        LOGGER.debug("Buscando pacientes ativos, página: {},"
+                + "tamanho: {}, ordenação: {}",
+                page, size, sort);
 
         return pacienteRepository.findAllAtivos(pageable)
                 .map(pacienteMapper::toDTO);
