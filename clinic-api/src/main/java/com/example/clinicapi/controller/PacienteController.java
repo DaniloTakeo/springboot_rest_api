@@ -4,7 +4,6 @@ import java.net.URI;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
@@ -23,9 +22,11 @@ import com.example.clinicapi.dto.PacienteDTO;
 import com.example.clinicapi.service.PacienteService;
 
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 
 @RestController
 @RequestMapping("/pacientes")
+@RequiredArgsConstructor
 public final class PacienteController {
 
     /**
@@ -50,12 +51,10 @@ public final class PacienteController {
      */
     private static final int TAMANHO_MINIMO_PAGINA = 1;
 
-
     /**
      * Serviço responsável pela lógica de negócios para operações com pacientes.
      */
-    @Autowired
-    private PacienteService pacienteService;
+    private final PacienteService pacienteService;
 
     /**
      * Lista todos os pacientes (ativos e inativos) com paginação.

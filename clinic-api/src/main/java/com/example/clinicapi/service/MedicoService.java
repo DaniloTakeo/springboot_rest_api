@@ -16,15 +16,29 @@ import com.example.clinicapi.repository.MedicoRepository;
 
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * Serviço responsável pela lógica de negócios dos médicos,
  * incluindo listagem, busca, criação, atualização e exclusão de médicos.
  * Gerencia o cache para listagens de médicos ativos.
  */
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class MedicoService {
+
+    /**
+     * Valor máximo permitido para o tamanho da página de resultados.
+     * Utilizado para evitar requisições com paginações excessivamente grandes.
+     */
+    private static final int TAMANHO_MAXIMO_PAGINA = 100;
+
+    /**
+     * Valor mínimo permitido para o tamanho da página de resultados.
+     * Garante que sempre haja ao menos um item por página.
+     */
+    private static final int TAMANHO_MINIMO_PAGINA = 1;
 
     /**
      * Repositório para operações de persistência de médicos.
@@ -44,6 +58,13 @@ public class MedicoService {
      * @return Uma página de MedicoDTOs.
      */
     public Page<MedicoDTO> findAll(final Pageable pageable) {
+        int page = Math.max(0, pageable.getPageNumber());
+        int size = Math.min(Math.max(TAMANHO_MINIMO_PAGINA,
+                pageable.getPageSize()), TAMANHO_MAXIMO_PAGINA);
+
+        log.debug("Buscando todos os médicos com paginação: "
+                + "página {}, tamanho {}",
+                page, size);
         return medicoRepository.findAll(pageable)
                 .map(medicoMapper::toDTO);
     }
@@ -56,6 +77,8 @@ public class MedicoService {
      * @throws EntityNotFoundException Se o médico não for encontrado.
      */
     public Optional<MedicoDTO> findById(final Long id) {
+        log.debug("Buscando médico por ID: {}", id);
+
         return Optional.ofNullable(medicoRepository.findById(id)
                 .map(medicoMapper::toDTO)
                 .orElseThrow(() ->
@@ -71,6 +94,14 @@ public class MedicoService {
      */
     @Cacheable("medicosAtivos")
     public Page<MedicoDTO> findAllAtivos(final Pageable pageable) {
+        int page = Math.max(0, pageable.getPageNumber());
+        int size = Math.min(Math.max(TAMANHO_MINIMO_PAGINA,
+                pageable.getPageSize()), TAMANHO_MAXIMO_PAGINA);
+
+        log.debug("Buscando médicos ativos com paginação: "
+                + "página {}, tamanho {}",
+                page, size);
+
         return medicoRepository.findAllAtivos(pageable)
                 .map(medicoMapper::toDTO);
     }
@@ -87,6 +118,14 @@ public class MedicoService {
     public Page<MedicoDTO> findByEspecialidade(
             final Especialidade especialidade,
             final Pageable pageable) {
+        int page = Math.max(0, pageable.getPageNumber());
+        int size = Math.min(Math.max(TAMANHO_MINIMO_PAGINA,
+                pageable.getPageSize()), TAMANHO_MAXIMO_PAGINA);
+
+        log.debug("Buscando médicos ativos por especialidade: "
+                + "{} - Página {}, tamanho {}",
+                especialidade, page, size);
+
         return medicoRepository
                 .findByEspecialidadeAndAtivoTrue(especialidade, pageable)
                 .map(medicoMapper::toDTO);
@@ -101,6 +140,7 @@ public class MedicoService {
      */
     @CacheEvict(value = "medicosAtivos", allEntries = true)
     public MedicoDTO save(final MedicoDTO medicoDTO) {
+        log.info("Salvando novo médico: {}", medicoDTO);
         final Medico medico = medicoMapper.toEntity(medicoDTO);
         return medicoMapper.toDTO(medicoRepository.save(medico));
     }
@@ -116,6 +156,7 @@ public class MedicoService {
      */
     @CacheEvict(value = "medicosAtivos", allEntries = true)
     public MedicoDTO update(final Long id, final MedicoDTO medicoDTO) {
+        log.info("Atualizando médico com ID: {}", id);
         final Medico medicoExistente = medicoRepository.findById(id)
                 .orElseThrow(() ->
                 new RuntimeException("Médico não encontrado"));
@@ -150,6 +191,7 @@ public class MedicoService {
      */
     @CacheEvict(value = "medicosAtivos", allEntries = true)
     public void deleteById(final Long id) {
+        log.info("Excluindo (inativando) médico com ID: {}", id);
         medicoRepository.deleteById(id);
     }
 }

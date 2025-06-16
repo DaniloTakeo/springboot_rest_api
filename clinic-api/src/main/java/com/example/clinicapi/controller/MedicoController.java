@@ -22,11 +22,25 @@ import com.example.clinicapi.service.MedicoService;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 @RestController
 @RequestMapping("/medicos")
 @RequiredArgsConstructor
 public final class MedicoController {
+
+    /**
+     * Valor máximo permitido para o tamanho da página de resultados.
+     * Utilizado para evitar requisições com paginações excessivamente grandes.
+     */
+    private static final int TAMANHO_MAXIMO_PAGINA = 100;
+
+    /**
+     * Valor mínimo permitido para o tamanho da página de resultados.
+     * Garante que sempre haja ao menos um item por página.
+     */
+    private static final int TAMANHO_MINIMO_PAGINA = 1;
 
     /**
      * Serviço responsável pela lógica de negócios das operações de médico.
@@ -42,6 +56,13 @@ public final class MedicoController {
     @GetMapping
     public ResponseEntity<Page<MedicoDTO>> listarTodos(
             @PageableDefault final Pageable pageable) {
+        int page = Math.max(0, pageable.getPageNumber());
+        int size = Math.min(Math.max(TAMANHO_MINIMO_PAGINA,
+                pageable.getPageSize()), TAMANHO_MAXIMO_PAGINA);
+
+        log.info("Requisição recebida para listar todos os médicos"
+                + " - página: {}, tamanho: {}",
+                page, size);
         return ResponseEntity.ok(medicoService.findAll(pageable));
     }
 
@@ -54,6 +75,14 @@ public final class MedicoController {
     @GetMapping("/ativos")
     public ResponseEntity<Page<MedicoDTO>> listarAtivos(
             @PageableDefault final Pageable pageable) {
+        int page = Math.max(0, pageable.getPageNumber());
+        int size = Math.min(Math.max(TAMANHO_MINIMO_PAGINA,
+                pageable.getPageSize()), TAMANHO_MAXIMO_PAGINA);
+
+        log.info("Requisição recebida para listar médicos ativos - "
+                + "página: {}, tamanho: {}",
+                page, size);
+
         return ResponseEntity.ok(medicoService.findAllAtivos(pageable));
     }
 
@@ -68,6 +97,14 @@ public final class MedicoController {
     public ResponseEntity<Page<MedicoDTO>> buscarPorEspecialidade(
             @PathVariable final Especialidade especialidade,
             @PageableDefault final Pageable pageable) {
+        int page = Math.max(0, pageable.getPageNumber());
+        int size = Math.min(Math.max(TAMANHO_MINIMO_PAGINA,
+                pageable.getPageSize()), TAMANHO_MAXIMO_PAGINA);
+
+        log.info("Requisição recebida para buscar médicos por especialidade:"
+                + " {} - página: {}, tamanho: {}",
+                especialidade, page, size);
+
         return ResponseEntity.ok(
                 medicoService.findByEspecialidade(especialidade, pageable));
     }
@@ -81,6 +118,8 @@ public final class MedicoController {
      */
     @GetMapping("/{id}")
     public ResponseEntity<MedicoDTO> buscarPorId(@PathVariable final Long id) {
+        log.info("Requisição recebida para buscar médico por ID: {}", id);
+
         return medicoService.findById(id)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
@@ -97,6 +136,9 @@ public final class MedicoController {
     public ResponseEntity<MedicoDTO> criar(
             @RequestBody @Valid final MedicoDTO medicoDTO,
             final UriComponentsBuilder uriBuilder) {
+        log.info("Requisição recebida para criar um novo médico: {}",
+                medicoDTO);
+
         final MedicoDTO medicoSalvo = medicoService.save(medicoDTO);
         final URI uri = uriBuilder.path("/medicos/{id}")
                                   .buildAndExpand(medicoSalvo.id())
@@ -115,6 +157,9 @@ public final class MedicoController {
     public ResponseEntity<MedicoDTO> atualizar(
             @PathVariable final Long id,
             @RequestBody final MedicoDTO medicoDTO) {
+        log.info("Requisição recebida para atualizar médico com ID: "
+                + "{} - Novos dados: {}", id, medicoDTO);
+
         final MedicoDTO medicoAtualizado = medicoService.update(id, medicoDTO);
         return ResponseEntity.ok(medicoAtualizado);
     }
@@ -127,6 +172,8 @@ public final class MedicoController {
      */
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deletar(@PathVariable final Long id) {
+        log.info("Requisição recebida para deletar (inativar) médico com ID:"
+                + " {}", id);
         medicoService.deleteById(id);
         return ResponseEntity.noContent().build();
     }
