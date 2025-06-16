@@ -3,9 +3,12 @@ package com.example.clinicapi.infra.security;
 import java.security.Key;
 import java.util.Date;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
@@ -17,6 +20,16 @@ import io.jsonwebtoken.security.Keys;
  */
 @Service
 public final class JwtService {
+
+    /**
+     * Logger estático utilizado para registrar mensagens de log relacionadas à
+     * execução da {@link JwtServicer}, como requisições recebidas,
+     * operações bem-sucedidas, falhas e outras informações relevantes
+     * durante o ciclo de vida da requisição.
+     * <p>Utiliza a implementação do SLF4J fornecida pelo Logback.</p>
+     */
+    private static final Logger LOGGER =
+            LoggerFactory.getLogger(JwtService.class);
 
     /**
      * A chave secreta utilizada para assinar e validar os tokens JWT,
@@ -69,12 +82,17 @@ public final class JwtService {
                 + MILLIS_PER_SECOND * SECONDS_PER_MINUTE
                 * MINUTES_PER_HOUR * TOKEN_EXPIRATION_HOURS);
 
-        return Jwts.builder()
+        String token = Jwts.builder()
                 .setSubject(subject)
                 .setIssuedAt(now)
                 .setExpiration(expiration)
                 .signWith(getSigningKey(), SignatureAlgorithm.HS256)
                 .compact();
+
+        LOGGER.info("Token gerado para '{}', expira em {}",
+                subject, expiration);
+
+        return token;
     }
 
     /**
@@ -84,12 +102,21 @@ public final class JwtService {
      * @return O sujeito do token.
      */
     public String getSubject(final String token) {
-        return Jwts
-                .parserBuilder()
-                .setSigningKey(getSigningKey())
-                .build()
-                .parseClaimsJws(token)
-                .getBody()
-                .getSubject();
+        try {
+            String subject = Jwts
+                    .parserBuilder()
+                    .setSigningKey(getSigningKey())
+                    .build()
+                    .parseClaimsJws(token)
+                    .getBody()
+                    .getSubject();
+
+            LOGGER.info("Subject extraído do token: '{}'", subject);
+            return subject;
+        } catch (JwtException e) {
+            LOGGER.error("Erro ao extrair subject do token: {}",
+                    e.getMessage());
+            throw e;
+        }
     }
 }
