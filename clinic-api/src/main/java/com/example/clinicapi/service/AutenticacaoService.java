@@ -8,11 +8,13 @@ import org.springframework.stereotype.Service;
 import com.example.clinicapi.repository.UsuarioRepository;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * Serviço responsável por carregar detalhes do usuário para autenticação
  * no Spring Security. Implementa a interface {@link UserDetailsService}.
  */
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class AutenticacaoService implements UserDetailsService {
@@ -36,8 +38,16 @@ public class AutenticacaoService implements UserDetailsService {
     @Override
     public UserDetails loadUserByUsername(final String username)
             throws UsernameNotFoundException {
+        log.debug("Iniciando autenticação para o usuário: {}", username);
         return repository.findByLogin(username)
-                .orElseThrow(() ->
-                new UsernameNotFoundException("Usuário não encontrado"));
+                .map(usuario -> {
+                    log.info("Usuário encontrado: {}", username);
+                    return usuario;
+                })
+                .orElseThrow(() -> {
+                    log.warn("Usuário não encontrado: {}", username);
+                    return new UsernameNotFoundException(
+                            "Usuário não encontrado");
+                });
     }
 }

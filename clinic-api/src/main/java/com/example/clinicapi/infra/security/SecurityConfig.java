@@ -15,11 +15,14 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 
 import com.example.clinicapi.service.AutenticacaoService;
 
+import lombok.extern.slf4j.Slf4j;
+
 /**
  * Classe de configuração de segurança para a aplicação Spring Boot.
  * Define as regras de segurança HTTP,
  * o gerenciador de autenticação e o codificador de senhas.
  */
+@Slf4j
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
@@ -44,6 +47,9 @@ public class SecurityConfig {
             final HttpSecurity http,
             final SecurityFilter securityFilter,
             final AutenticacaoService usuarioService) throws Exception {
+        log.info("Configurando SecurityFilterChain com endpoints "
+                + "públicos e autenticação JWT.");
+
         http
             .csrf(AbstractHttpConfigurer::disable)
             .sessionManagement(session -> session
@@ -85,6 +91,9 @@ public class SecurityConfig {
     public AuthenticationManager authenticationManager(
             final HttpSecurity http,
             final AutenticacaoService usuarioService) throws Exception {
+        log.info("Criando AuthenticationManager com AutenticacaoService e "
+                + "BCryptPasswordEncoder.");
+
         return http.getSharedObject(AuthenticationManagerBuilder.class)
                 .userDetailsService(usuarioService)
                 .passwordEncoder(passwordEncoder())

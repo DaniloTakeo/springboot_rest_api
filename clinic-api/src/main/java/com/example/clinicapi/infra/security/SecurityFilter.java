@@ -15,6 +15,7 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * Filtro de segurança responsável por processar
@@ -23,6 +24,7 @@ import lombok.RequiredArgsConstructor;
  * Estende OncePerRequestFilter para garantir que o
  * filtro seja executado uma única vez por requisição.
  */
+@Slf4j
 @Component
 @RequiredArgsConstructor
 public final class SecurityFilter extends OncePerRequestFilter {
@@ -53,6 +55,9 @@ public final class SecurityFilter extends OncePerRequestFilter {
             final HttpServletResponse response,
             final FilterChain chain) throws ServletException, IOException {
 
+        log.debug("Executando filtro de segurança para a requisição: {}",
+                request.getRequestURI());
+
         final String token = recuperarToken(request);
         if (token != null
                 && SecurityContextHolder.getContext()
@@ -74,6 +79,10 @@ public final class SecurityFilter extends OncePerRequestFilter {
                         .buildDetails(request));
                 SecurityContextHolder.getContext()
                 .setAuthentication(authentication);
+                log.info("Usuário autenticado com sucesso: {}", login);
+            } else {
+                log.warn("Usuário não encontrado no banco de dados: {}",
+                        login);
             }
         }
 
@@ -90,8 +99,12 @@ public final class SecurityFilter extends OncePerRequestFilter {
      */
     private String recuperarToken(final HttpServletRequest request) {
         final String header = request.getHeader("Authorization");
-        return (header != null && header.startsWith("Bearer "))
+        final String token = (header != null && header.startsWith("Bearer "))
                 ? header.replace("Bearer ", "") : null;
+        log.debug("Token extraído do cabeçalho Authorization: {}",
+                token != null ? "[PROTEGIDO]" : "null");
+
+        return token;
     }
 
     /**
