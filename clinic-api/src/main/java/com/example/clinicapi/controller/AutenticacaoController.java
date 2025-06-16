@@ -2,8 +2,6 @@ package com.example.clinicapi.controller;
 
 import java.net.URI;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -22,21 +20,13 @@ import com.example.clinicapi.service.UsuarioService;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 @RestController
 @RequestMapping("/auth")
 @RequiredArgsConstructor
 public class AutenticacaoController {
-
-    /**
-     * Logger estático utilizado para registrar mensagens de log relacionadas à
-     * execução da {@link AutenticacaoController}, como requisições recebidas,
-     * operações bem-sucedidas, falhas e outras informações relevantes
-     * durante o ciclo de vida da requisição.
-     * <p>Utiliza a implementação do SLF4J fornecida pelo Logback.</p>
-     */
-    private static final Logger LOGGER =
-            LoggerFactory.getLogger(AutenticacaoController.class);
 
     /**
      * Gerenciador de autenticação para processar as requisições de login.
@@ -62,7 +52,7 @@ public class AutenticacaoController {
     @PostMapping
     public TokenDTO login(
             @RequestBody @Valid final DadosAutenticacaoDTO dados) {
-        LOGGER.info("Tentativa de login para o usuário '{}'",
+        log.info("Tentativa de login para o usuário '{}'",
                 dados.login());
 
         try {
@@ -74,11 +64,11 @@ public class AutenticacaoController {
             var usuario = (Usuario) auth.getPrincipal();
             var token = jwtService.generateToken(usuario.getLogin());
 
-            LOGGER.info("Login bem-sucedido para o usuário '{}'",
+            log.info("Login bem-sucedido para o usuário '{}'",
                     usuario.getLogin());
             return new TokenDTO(token);
         } catch (Exception e) {
-            LOGGER.warn("Falha na autenticação para o usuário '{}': {}",
+            log.warn("Falha na autenticação para o usuário '{}': {}",
                     dados.login(), e.getMessage());
             throw e;
         }
@@ -101,11 +91,11 @@ public class AutenticacaoController {
     @PostMapping("/register")
     public ResponseEntity<TokenDTO> cadastrarUsuarioComToken(
             @RequestBody @Valid final DadosAutenticacaoDTO dados) {
-        LOGGER.info("Tentativa de cadastro para o usuário '{}'",
+        log.info("Tentativa de cadastro para o usuário '{}'",
                 dados.login());
 
         if (usuarioService.loginJaExiste(dados.login())) {
-            LOGGER.warn("Cadastro negado: login '{}' já está em uso",
+            log.warn("Cadastro negado: login '{}' já está em uso",
                     dados.login());
 
             return ResponseEntity.status(HttpStatus.CONFLICT).build();
@@ -116,7 +106,7 @@ public class AutenticacaoController {
         final URI location = URI.create("/auth/" + dados.login());
         final String token = jwtService.generateToken(dados.login());
 
-        LOGGER.info("Usuário '{}' cadastrado com sucesso", dados.login());
+        log.info("Usuário '{}' cadastrado com sucesso", dados.login());
 
         return ResponseEntity
                 .created(location)

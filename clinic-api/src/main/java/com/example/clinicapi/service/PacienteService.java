@@ -2,8 +2,6 @@ package com.example.clinicapi.service;
 
 import java.util.Optional;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -15,24 +13,16 @@ import com.example.clinicapi.repository.PacienteRepository;
 
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * Serviço responsável pela lógica de negócios dos pacientes,
  * incluindo listagem, busca, criação, atualização e exclusão de pacientes.
  */
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class PacienteService {
-
-    /**
-     * Logger estático utilizado para registrar mensagens de log relacionadas à
-     * execução da {@link PacienteService}, como requisições recebidas,
-     * operações bem-sucedidas, falhas e outras informações relevantes
-     * durante o ciclo de vida da requisição.
-     * <p>Utiliza a implementação do SLF4J fornecida pelo Logback.</p>
-     */
-    private static final Logger LOGGER = LoggerFactory
-            .getLogger(PacienteService.class);
 
     /**
      * Valor máximo permitido para o tamanho da página de resultados.
@@ -69,7 +59,7 @@ public class PacienteService {
                 pageable.getPageSize()), TAMANHO_MAXIMO_PAGINA);
         String sort = pageable.getSort().toString().replaceAll("[\r\n]", "");
 
-        LOGGER.debug("Buscando pacientes - página: {},"
+        log.debug("Buscando pacientes - página: {},"
                 + "tamanho: {}, ordenação: {}", page, size, sort);
 
         return pacienteRepository.findAll(pageable)
@@ -83,7 +73,7 @@ public class PacienteService {
      * @return Um Optional contendo o PacienteDTO, se encontrado.
      */
     public Optional<PacienteDTO> findById(final Long id) {
-        LOGGER.debug("Buscando paciente por ID: {}", id);
+        log.debug("Buscando paciente por ID: {}", id);
 
         return pacienteRepository.findById(id)
                 .map(pacienteMapper::toDTO);
@@ -102,7 +92,7 @@ public class PacienteService {
                 pageable.getPageSize()), TAMANHO_MAXIMO_PAGINA);
         String sort = pageable.getSort().toString().replaceAll("[\r\n]", "");
 
-        LOGGER.debug("Buscando pacientes ativos, página: {},"
+        log.debug("Buscando pacientes ativos, página: {},"
                 + "tamanho: {}, ordenação: {}",
                 page, size, sort);
 
@@ -117,12 +107,12 @@ public class PacienteService {
      * @return O PacienteDTO do paciente salvo.
      */
     public PacienteDTO save(final PacienteDTO pacienteDTO) {
-        LOGGER.debug("Salvando novo paciente: {}", pacienteDTO);
+        log.debug("Salvando novo paciente: {}", pacienteDTO);
 
         final Paciente paciente = pacienteMapper.toEntity(pacienteDTO);
         final Paciente pacienteSalvo = pacienteRepository.save(paciente);
 
-        LOGGER.info("Paciente salvo com sucesso: ID {}",
+        log.info("Paciente salvo com sucesso: ID {}",
                 pacienteSalvo.getId());
 
         return pacienteMapper.toDTO(pacienteSalvo);
@@ -137,7 +127,7 @@ public class PacienteService {
      * @throws EntityNotFoundException Se o paciente não for encontrado.
      */
     public PacienteDTO update(final Long id, final PacienteDTO dto) {
-        LOGGER.debug("Atualizando paciente ID {} com DTO: {}", id, dto);
+        log.debug("Atualizando paciente ID {} com DTO: {}", id, dto);
 
         final Paciente paciente = pacienteRepository.findById(id)
                 .orElseThrow(() ->
@@ -162,7 +152,7 @@ public class PacienteService {
             paciente.setAtivo(dto.ativo());
         }
 
-        LOGGER.info("Paciente ID {} atualizado com sucesso", id);
+        log.info("Paciente ID {} atualizado com sucesso", id);
         return pacienteMapper.toDTO(pacienteRepository.save(paciente));
     }
 
@@ -172,8 +162,8 @@ public class PacienteService {
      * @param id O ID do paciente a ser excluído.
      */
     public void deleteById(final Long id) {
-        LOGGER.debug("Iniciando inativação do paciente com ID: {}", id);
+        log.debug("Iniciando inativação do paciente com ID: {}", id);
         pacienteRepository.deleteById(id);
-        LOGGER.info("Paciente com ID {} inativado (soft delete)", id);
+        log.info("Paciente com ID {} inativado (soft delete)", id);
     }
 }
