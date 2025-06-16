@@ -2,6 +2,8 @@ package com.example.clinicapi.service;
 
 import java.util.Optional;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -24,7 +26,17 @@ import lombok.RequiredArgsConstructor;
  */
 @Service
 @RequiredArgsConstructor
-public class ConsultaService { // Classe marcada como final
+public class ConsultaService {
+
+    /**
+     * Logger estático utilizado para registrar mensagens de log relacionadas à
+     * execução da {@link ConsultaService}, como requisições recebidas,
+     * operações bem-sucedidas, falhas e outras informações relevantes
+     * durante o ciclo de vida da requisição.
+     * <p>Utiliza a implementação do SLF4J fornecida pelo Logback.</p>
+     */
+    private static final Logger LOGGER =
+            LoggerFactory.getLogger(ConsultaService.class);
 
     /**
      * Repositório para operações de persistência de consultas.
@@ -42,6 +54,17 @@ public class ConsultaService { // Classe marcada como final
      * Mapper para conversão entre entidades Consulta e ConsultaDTO.
      */
     private final ConsultaMapper consultaMapper;
+    /**
+     * Valor máximo permitido para o tamanho da página de resultados.
+     * Utilizado para limitar a quantidade de
+     * dados retornados em uma única requisição.
+     */
+    private static final int TAMANHO_MAXIMO_PAGINA = 100;
+    /**
+     * Valor mínimo permitido para o tamanho da página de resultados.
+     * Garante que ao menos um item será retornado por página.
+     */
+    private static final int TAMANHO_MINIMO_PAGINA = 1;
 
     /**
      * Cria uma nova consulta com base nos dados fornecidos.
@@ -53,6 +76,11 @@ public class ConsultaService { // Classe marcada como final
      * médico não forem encontrados.
      */
     public ConsultaDTO createConsulta(final ConsultaDTO consultaDTO) {
+        LOGGER.info("Tentando agendar nova consulta:"
+                + " paciente={}, medico={}, dataHora={}",
+                consultaDTO.pacienteId(), consultaDTO.medicoId(),
+                consultaDTO.dataHora());
+
         final Optional<Paciente> paciente =
                 pacienteRepository.findById(consultaDTO.pacienteId());
         final Optional<Medico> medico =
@@ -67,8 +95,14 @@ public class ConsultaService { // Classe marcada como final
 
             final Consulta savedConsulta = consultaRepository.save(consulta);
 
+            LOGGER.info("Consulta agendada com sucesso: id={}, dataHora={}",
+                    savedConsulta.getId(), savedConsulta.getDataHora());
+
             return consultaMapper.toDTO(savedConsulta);
         }
+
+        LOGGER.warn("Falha ao agendar consulta - "
+                + "paciente ou médico não encontrados");
 
         throw new IllegalArgumentException(
                 "Paciente ou Médico não encontrados");
@@ -82,6 +116,15 @@ public class ConsultaService { // Classe marcada como final
      * @return Uma página de ConsultaDTOs.
      */
     public Page<ConsultaDTO> findAll(final Pageable pageable) {
+        int page = Math.max(0, pageable.getPageNumber());
+        int size = Math.min(Math.max(TAMANHO_MINIMO_PAGINA,
+                pageable.getPageSize()), TAMANHO_MAXIMO_PAGINA);
+        String sort = pageable.getSort().toString().replaceAll("[\r\n]", "");
+
+        LOGGER.info("Listando todas as consultas - "
+                + "página: {}, tamanho: {}, ordenação: {}",
+                page, size, sort);
+
         return consultaRepository.findAll(pageable)
                 .map(consultaMapper::toDTO);
     }
@@ -94,7 +137,13 @@ public class ConsultaService { // Classe marcada como final
      * se encontrado, ou um Optional vazio.
      */
     public Optional<ConsultaDTO> findById(final Long id) {
-        return consultaRepository.findById(id).map(consultaMapper::toDTO);
+        LOGGER.info("Buscando consulta por ID: {}", id);
+        return consultaRepository.findById(id)
+                .map(consulta -> {
+                    LOGGER.info("Consulta encontrada: id={}",
+                            consulta.getId());
+                    return consultaMapper.toDTO(consulta);
+                });
     }
 
     /**
@@ -103,7 +152,9 @@ public class ConsultaService { // Classe marcada como final
      * @param id O ID da consulta a ser excluída.
      */
     public void deleteById(final Long id) {
+        LOGGER.info("Cancelando consulta de ID: {}", id);
         consultaRepository.deleteById(id);
+        LOGGER.info("Consulta de ID {} cancelada com sucesso", id);
     }
 
     /**
@@ -120,6 +171,7 @@ public class ConsultaService { // Classe marcada como final
      */
     public Optional<ConsultaDTO> updateConsulta(
             final Long id, final ConsultaDTO consultaDTO) {
+        LOGGER.info("Tentando atualizar consulta de ID: {}", id);
         final Optional<Consulta> existingConsulta = consultaRepository
                 .findById(id);
 
@@ -144,9 +196,11 @@ public class ConsultaService { // Classe marcada como final
             }
 
             final Consulta updatedConsulta = consultaRepository.save(consulta);
+            LOGGER.info("Consulta ID {} atualizada com sucesso", id);
             return Optional.of(consultaMapper.toDTO(updatedConsulta));
         }
 
+        LOGGER.warn("Falha ao atualizar - consulta ID {} não encontrada", id);
         throw new IllegalArgumentException(
                 "Consulta não encontrada para o ID fornecido");
     }

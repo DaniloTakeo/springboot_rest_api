@@ -2,6 +2,8 @@ package com.example.clinicapi.controller;
 
 import java.net.URI;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
@@ -28,6 +30,16 @@ import lombok.RequiredArgsConstructor;
 public class ConsultaController {
 
     /**
+     * Logger estático utilizado para registrar mensagens de log relacionadas à
+     * execução da {@link ConsultaController}, como requisições recebidas,
+     * operações bem-sucedidas, falhas e outras informações relevantes
+     * durante o ciclo de vida da requisição.
+     * <p>Utiliza a implementação do SLF4J fornecida pelo Logback.</p>
+     */
+    private static final Logger LOGGER = LoggerFactory
+            .getLogger(PacienteController.class);
+
+    /**
      * Serviço responsável pela lógica de negócios das operações de consulta.
      */
     private final ConsultaService consultaService;
@@ -44,6 +56,7 @@ public class ConsultaController {
     public ResponseEntity<ConsultaDTO> agendar(
             @RequestBody @Valid final ConsultaDTO consultaDTO,
             final UriComponentsBuilder uriBuilder) {
+        LOGGER.info("Requisição recebida para agendar consulta");
         ConsultaDTO createdConsulta = consultaService
                 .createConsulta(consultaDTO);
 
@@ -64,9 +77,13 @@ public class ConsultaController {
     @GetMapping("/{id}")
     public ResponseEntity<ConsultaDTO> buscarPorId(
             @PathVariable final Long id) {
+        LOGGER.info("Requisição recebida para buscar consulta ID {}", id);
         return consultaService.findById(id)
                 .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
+                .orElseGet(() -> {
+                    LOGGER.warn("Consulta ID {} não encontrada", id);
+                    return ResponseEntity.notFound().build();
+                });
     }
 
     /**
@@ -79,6 +96,7 @@ public class ConsultaController {
     @GetMapping
     public ResponseEntity<Page<ConsultaDTO>> listar(
             @PageableDefault final Pageable pageable) {
+        LOGGER.info("Requisição recebida para listar consultas");
         Page<ConsultaDTO> consultas = consultaService
                 .findAll(pageable);
         return ResponseEntity.ok(consultas);
@@ -96,9 +114,14 @@ public class ConsultaController {
     public ResponseEntity<ConsultaDTO> atualizar(
             @PathVariable final Long id,
             @RequestBody final ConsultaDTO consultaDTO) {
+        LOGGER.info("Requisição recebida para atualizar consulta ID {}", id);
         return consultaService.updateConsulta(id, consultaDTO)
                 .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
+                .orElseGet(() -> {
+                    LOGGER.warn("Consulta ID {} não encontrada "
+                            + "para atualização", id);
+                    return ResponseEntity.notFound().build();
+                });
     }
 
     /**
@@ -110,6 +133,7 @@ public class ConsultaController {
      */
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> cancelar(@PathVariable final Long id) {
+        LOGGER.info("Requisição recebida para cancelar consulta ID {}", id);
         consultaService.deleteById(id);
         return ResponseEntity.noContent().build();
     }
