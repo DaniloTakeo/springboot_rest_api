@@ -11,7 +11,9 @@ import com.example.clinicapi.service.UsuarioService;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 @RestController
 @RequestMapping("/usuarios")
 @RequiredArgsConstructor
@@ -32,7 +34,10 @@ public final class UsuarioController {
     @PostMapping
     public ResponseEntity<Void> cadastrar(
             @RequestBody @Valid final DadosAutenticacaoDTO dados) {
+        log.info("Requisição recebida para cadastro de novo usuário:"
+                + " login={}", dados.login());
         service.cadastrarUsuario(dados);
+        log.info("Usuário cadastrado com sucesso: login={}", dados.login());
         return ResponseEntity.ok().build();
     }
 }
