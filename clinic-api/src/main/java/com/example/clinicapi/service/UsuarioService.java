@@ -1,5 +1,7 @@
 package com.example.clinicapi.service;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -18,6 +20,16 @@ import lombok.RequiredArgsConstructor;
 public class UsuarioService {
 
     /**
+     * Logger estático utilizado para registrar mensagens de log relacionadas à
+     * execução da {@link UsuarioService}, como requisições recebidas,
+     * operações bem-sucedidas, falhas e outras informações relevantes
+     * durante o ciclo de vida da requisição.
+     * <p>Utiliza a implementação do SLF4J fornecida pelo Logback.</p>
+     */
+    private static final Logger LOGGER =
+            LoggerFactory.getLogger(UsuarioService.class);
+
+    /**
      * Repositório para operações de persistência de usuários.
      */
     private final UsuarioRepository repository;
@@ -32,9 +44,13 @@ public class UsuarioService {
      * @param dados O DTO contendo o login e a senha do novo usuário.
      */
     public void cadastrarUsuario(final DadosAutenticacaoDTO dados) {
+        LOGGER.info("Iniciando cadastro para login '{}'", dados.login());
+
         final String senhaCriptografada = encoder.encode(dados.senha());
         final Usuario usuario = new Usuario(dados.login(), senhaCriptografada);
         repository.save(usuario);
+
+        LOGGER.info("Usuário '{}' cadastrado com sucesso", dados.login());
     }
 
     /**
@@ -45,6 +61,14 @@ public class UsuarioService {
      * {@code false} caso contrário.
      */
     public boolean loginJaExiste(final String login) {
-        return repository.existsByLogin(login);
+        boolean existe = repository.existsByLogin(login);
+
+        if (existe) {
+            LOGGER.warn("Login '{}' já está em uso", login);
+        } else {
+            LOGGER.info("Login '{}' disponível para cadastro", login);
+        }
+
+        return existe;
     }
 }

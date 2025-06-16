@@ -23,7 +23,7 @@ public final class JwtService {
 
     /**
      * Logger estático utilizado para registrar mensagens de log relacionadas à
-     * execução da {@link JwtServicer}, como requisições recebidas,
+     * execução da {@link JwtService}, como requisições recebidas,
      * operações bem-sucedidas, falhas e outras informações relevantes
      * durante o ciclo de vida da requisição.
      * <p>Utiliza a implementação do SLF4J fornecida pelo Logback.</p>
