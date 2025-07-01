@@ -10,6 +10,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 
 import org.junit.jupiter.api.Test;
@@ -17,6 +18,10 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 
 import com.example.clinicapi.dto.ConsultaDTO;
 import com.example.clinicapi.mapper.ConsultaMapper;
@@ -117,5 +122,37 @@ class ConsultaServiceTest {
         consultaService.deleteById(id);
 
         verify(consultaRepository, times(1)).deleteById(id);
+    }
+    
+    @Test
+    void deveLancarExcecaoQuandoPacienteOuMedicoNaoForemEncontrados() {
+        ConsultaDTO dto = new ConsultaDTO(null, 1L, 1L, LocalDateTime.now(), null, StatusConsulta.AGENDADA);
+
+        when(pacienteRepository.findById(1L)).thenReturn(Optional.empty());
+        when(medicoRepository.findById(1L)).thenReturn(Optional.of(new Medico()));
+
+        assertThrows(IllegalArgumentException.class, () -> consultaService.createConsulta(dto));
+
+        when(pacienteRepository.findById(1L)).thenReturn(Optional.of(new Paciente()));
+        when(medicoRepository.findById(1L)).thenReturn(Optional.empty());
+
+        assertThrows(IllegalArgumentException.class, () -> consultaService.createConsulta(dto));
+    }
+    
+    @Test
+    void deveRetornarPaginaDeConsultas() {
+        Pageable pageable = PageRequest.of(0, 10);
+        Consulta consulta = new Consulta();
+        ConsultaDTO dto = new ConsultaDTO(1L, 1L, 1L, LocalDateTime.now(), "Rotina", StatusConsulta.AGENDADA);
+
+        Page<Consulta> page = new PageImpl<>(List.of(consulta));
+
+        when(consultaRepository.findAll(pageable)).thenReturn(page);
+        when(consultaMapper.toDTO(consulta)).thenReturn(dto);
+
+        Page<ConsultaDTO> resultado = consultaService.findAll(pageable);
+
+        assertEquals(1, resultado.getTotalElements());
+        assertEquals(dto, resultado.getContent().get(0));
     }
 }
