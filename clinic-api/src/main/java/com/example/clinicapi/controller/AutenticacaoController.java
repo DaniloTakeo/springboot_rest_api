@@ -50,28 +50,18 @@ public class AutenticacaoController {
      * @return Um TokenDTO contendo o token JWT gerado.
      */
     @PostMapping
-    public TokenDTO login(
-            @RequestBody @Valid final DadosAutenticacaoDTO dados) {
-        log.info("Tentativa de login para o usuário '{}'",
-                dados.login());
+    public TokenDTO login(@RequestBody @Valid final DadosAutenticacaoDTO dados) {
+        log.info("Tentativa de login para o usuário '{}'", dados.login());
 
-        try {
-            Authentication auth = manager.authenticate(
-                    new UsernamePasswordAuthenticationToken(dados.login(),
-                            dados.senha())
-            );
+        Authentication auth = manager.authenticate(
+            new UsernamePasswordAuthenticationToken(dados.login(),
+                    dados.senha()));
 
-            var usuario = (Usuario) auth.getPrincipal();
-            var token = jwtService.generateToken(usuario.getLogin());
+        var usuario = (Usuario) auth.getPrincipal();
+        var token = jwtService.generateToken(usuario.getLogin());
 
-            log.info("Login bem-sucedido para o usuário '{}'",
-                    usuario.getLogin());
-            return new TokenDTO(token);
-        } catch (Exception e) {
-            log.warn("Falha na autenticação para o usuário '{}': {}",
-                    dados.login(), e.getMessage());
-            throw e;
-        }
+        log.info("Login bem-sucedido para o usuário '{}'", usuario.getLogin());
+        return new TokenDTO(token);
     }
 
     /**

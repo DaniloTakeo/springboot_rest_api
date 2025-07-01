@@ -7,6 +7,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -98,5 +99,26 @@ public final class GlobalExceptionHandler {
                 errors.size(), errors.keySet());
 
         return ResponseEntity.badRequest().body(errors);
+    }
+
+    /**
+     * Manipula exceções de autenticação causadas por credenciais inválidas,
+     * como login ou senha incorretos. Essa exceção é lançada
+     * pelo Spring Security quando a autenticação falha.
+     *
+     * <p>Retorna uma resposta com status {@code 401 Unauthorized},
+     * indicando que a autenticação não foi bem-sucedida.</p>
+     *
+     * @param ex A exceção {@link BadCredentialsException} capturada.
+     * @return Uma {@link ResponseEntity} contendo um {@link ErrorResponse}
+     * com status 401 Unauthorized e detalhes da falha de autenticação.
+     */
+    @ExceptionHandler(BadCredentialsException.class)
+    public ResponseEntity<ErrorResponse> handleBadCredentialsException(
+            final BadCredentialsException ex) {
+        LOGGER.warn("Falha na autenticação: {}", ex.getMessage());
+        final ErrorResponse error = new ErrorResponse("UNAUTHORIZED",
+                "Credenciais inválidas. Verifique o login e a senha.");
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(error);
     }
 }
