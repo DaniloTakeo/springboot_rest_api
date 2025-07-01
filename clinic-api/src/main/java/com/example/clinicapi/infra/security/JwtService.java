@@ -114,7 +114,8 @@ public final class JwtService {
             LOGGER.info("Subject extraído do token: '{}'", subject);
             return subject;
         } catch (JwtException e) {
-            String errorMessage = String.format("Erro ao extrair subject do token JWT. Token fornecido: '%s'", token);
+            String errorMessage = String.format("Erro ao extrair subject"
+                    + " do token JWT. Token fornecido: '%s'", token);
             LOGGER.error("{} - {}", errorMessage, e.getMessage());
             throw new JwtException(errorMessage, e);
         }
