@@ -109,4 +109,33 @@ class PacienteControllerIT extends TestBaseIT {
         Optional<Paciente> encontrado = pacienteRepository.findById(paciente.getId());
         assertTrue(encontrado.isEmpty() || !encontrado.get().isAtivo());
     }
+    
+    @Test
+    @WithMockUser(username = "admin", roles = {"ADMIN"})
+    void deveRetornar404QuandoPacienteNaoExistir() throws Exception {
+        mockMvc.perform(get("/pacientes/{id}", 9999L))
+                .andExpect(status().isNotFound());
+    }
+    
+    @Test
+    @WithMockUser(username = "admin", roles = {"ADMIN"})
+    void deveRetornarBadRequestQuandoNomeNaoInformado() throws Exception {
+        PacienteDTO dto = new PacienteDTO(null, "", "email@email.com", "12345678900", "11999999999", LocalDate.of(2000,1,1), true);
+
+        mockMvc.perform(post("/pacientes")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(dto)))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.nome").exists());
+    }
+    
+    @Test
+    @WithMockUser(username = "admin", roles = {"ADMIN"})
+    void deveRespeitarParametrosDePaginacao() throws Exception {
+        mockMvc.perform(get("/pacientes")
+                .param("page", "0")
+                .param("size", "50"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.size").value(50));
+    }
 }
