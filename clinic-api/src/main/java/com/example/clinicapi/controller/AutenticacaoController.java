@@ -50,7 +50,8 @@ public class AutenticacaoController {
      * @return Um TokenDTO contendo o token JWT gerado.
      */
     @PostMapping
-    public TokenDTO login(@RequestBody @Valid final DadosAutenticacaoDTO dados) {
+    public TokenDTO login(@RequestBody @Valid
+            final DadosAutenticacaoDTO dados) {
         log.info("Tentativa de login para o usuário '{}'", dados.login());
 
         Authentication auth = manager.authenticate(

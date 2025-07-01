@@ -8,4 +8,4 @@ public record DadosAutenticacaoDTO(
 
         @NotBlank(message = "Senha é obrigatória")
         String senha
-) {}    
+) { }
