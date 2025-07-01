@@ -100,4 +100,32 @@ class MedicoControllerIT extends TestBaseIT {
         Optional<Medico> encontrado = medicoRepository.findById(medico.getId());
         assertTrue(encontrado.isEmpty() || !encontrado.get().isAtivo());
     }
+    
+    @Test
+    @WithMockUser(username = "admin", roles = {"ADMIN"})
+    void deveBuscarMedicosPorEspecialidade() throws Exception {
+        Medico medico = new Medico(null, "Dr. Carlos", "333333", Especialidade.CARDIOLOGIA, "carlos@email.com", "999999999", true);
+        medicoRepository.save(medico);
+
+        mockMvc.perform(get("/medicos/especialidade/CARDIOLOGIA"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.content[0].nome").value("Dr. Carlos"));
+    }
+    
+    @Test
+    @WithMockUser(username = "admin", roles = {"ADMIN"})
+    void deveBuscarMedicoPorId() throws Exception {
+        Medico medico = medicoRepository.save(new Medico(null, "Dr. Ana", "444444", Especialidade.PEDIATRIA, "ana@email.com", "888888888", true));
+
+        mockMvc.perform(get("/medicos/" + medico.getId()))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.nome").value("Dr. Ana"));
+    }
+
+    @Test
+    @WithMockUser(username = "admin", roles = {"ADMIN"})
+    void deveRetornar404QuandoMedicoNaoExistir() throws Exception {
+        mockMvc.perform(get("/medicos/999999"))
+                .andExpect(status().isNotFound());
+    }
 }

@@ -79,10 +79,8 @@ public class MedicoService {
     public Optional<MedicoDTO> findById(final Long id) {
         log.debug("Buscando médico por ID: {}", id);
 
-        return Optional.ofNullable(medicoRepository.findById(id)
-                .map(medicoMapper::toDTO)
-                .orElseThrow(() ->
-                    new EntityNotFoundException("Médico não encontrado")));
+        return medicoRepository.findById(id)
+                .map(medicoMapper::toDTO);
     }
 
     /**
