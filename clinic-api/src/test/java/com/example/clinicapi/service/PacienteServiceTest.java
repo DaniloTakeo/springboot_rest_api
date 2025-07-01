@@ -1,6 +1,7 @@
 package com.example.clinicapi.service;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doNothing;
@@ -120,5 +121,23 @@ class PacienteServiceTest {
         pacienteService.deleteById(id);
 
         verify(pacienteRepository, times(1)).deleteById(id);
+    }
+    
+    @Test
+    void deveSalvarNovoPaciente() {
+        PacienteDTO dtoEntrada = new PacienteDTO(null, "Carlos", "carlos@email.com", "98765432100", "11911111111", LocalDate.of(1995, 3, 15), true);
+        Paciente paciente = new Paciente(null, "Carlos", "carlos@email.com", "98765432100", "11911111111", LocalDate.of(1995, 3, 15), true);
+        Paciente pacienteSalvo = new Paciente(1L, "Carlos", "carlos@email.com", "98765432100", "11911111111", LocalDate.of(1995, 3, 15), true);
+        PacienteDTO dtoRetorno = new PacienteDTO(1L, "Carlos", "carlos@email.com", "98765432100", "11911111111", LocalDate.of(1995, 3, 15), true);
+
+        when(pacienteMapper.toEntity(dtoEntrada)).thenReturn(paciente);
+        when(pacienteRepository.save(paciente)).thenReturn(pacienteSalvo);
+        when(pacienteMapper.toDTO(pacienteSalvo)).thenReturn(dtoRetorno);
+
+        PacienteDTO resultado = pacienteService.save(dtoEntrada);
+
+        assertNotNull(resultado);
+        assertEquals("Carlos", resultado.nome());
+        assertEquals("carlos@email.com", resultado.email());
     }
 }
