@@ -1,9 +1,14 @@
 package com.example.clinicapi.service;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.util.List;
@@ -125,5 +130,76 @@ class MedicoServiceTest {
         });
 
         assertEquals("Dados inválidos", exception.getMessage());
+    }
+    
+    @Test
+    void deveRetornarMedicosAtivos() {
+        Medico medico = new Medico(1L, "Dr. Ativo", "2222", Especialidade.CARDIOLOGIA, "ativo@med.com", "88888888", true);
+        MedicoDTO dto = new MedicoDTO(1L, "Dr. Ativo", "ativo@med.com", "2222", "88888888", Especialidade.CARDIOLOGIA, true);
+
+        when(medicoRepository.findAllAtivos(any(Pageable.class)))
+                .thenReturn(new PageImpl<>(List.of(medico)));
+        when(medicoMapper.toDTO(medico)).thenReturn(dto);
+
+        Page<MedicoDTO> result = medicoService.findAllAtivos(PageRequest.of(0, 10));
+
+        assertEquals(1, result.getTotalElements());
+        assertEquals("Dr. Ativo", result.getContent().get(0).nome());
+    }
+    
+    @Test
+    void deveRetornarMedicosPorEspecialidade() {
+        Medico medico = new Medico(1L, "Dr. Especialista", "3333", Especialidade.ORTOPEDIA, "esp@med.com", "77777777", true);
+        MedicoDTO dto = new MedicoDTO(1L, "Dr. Especialista", "esp@med.com", "3333", "77777777", Especialidade.ORTOPEDIA, true);
+
+        when(medicoRepository.findByEspecialidadeAndAtivoTrue(eq(Especialidade.ORTOPEDIA), any(Pageable.class)))
+                .thenReturn(new PageImpl<>(List.of(medico)));
+        when(medicoMapper.toDTO(medico)).thenReturn(dto);
+
+        Page<MedicoDTO> result = medicoService.findByEspecialidade(Especialidade.ORTOPEDIA, PageRequest.of(0, 10));
+
+        assertEquals(1, result.getTotalElements());
+        assertEquals("Dr. Especialista", result.getContent().get(0).nome());
+    }
+    
+    @Test
+    void deveAtualizarMedicoExistente() {
+        Long id = 1L;
+        MedicoDTO dtoAtualizado = new MedicoDTO(id, "Dr. Atualizado", "novo@email.com", "4444", "66666666", Especialidade.DERMATOLOGIA, false);
+        Medico medicoExistente = new Medico(id, "Dr. Original", "1111", Especialidade.CARDIOLOGIA, "dr@old.com", "99999999", true);
+        Medico medicoAtualizado = new Medico(id, "Dr. Atualizado", "4444", Especialidade.DERMATOLOGIA, "novo@email.com", "66666666", false);
+
+        when(medicoRepository.findById(id)).thenReturn(Optional.of(medicoExistente));
+        when(medicoRepository.save(any(Medico.class))).thenReturn(medicoAtualizado);
+        when(medicoMapper.toDTO(medicoAtualizado)).thenReturn(dtoAtualizado);
+
+        MedicoDTO result = medicoService.update(id, dtoAtualizado);
+
+        assertEquals("Dr. Atualizado", result.nome());
+        assertEquals("novo@email.com", result.email());
+        assertEquals(Especialidade.DERMATOLOGIA, result.especialidade());
+        assertFalse(result.ativo());
+    }
+    
+    @Test
+    void deveLancarExcecaoQuandoAtualizarMedicoInexistente() {
+        MedicoDTO dto = new MedicoDTO(1L, "Dr. Atualizado", "email", "crm", "tel", Especialidade.CARDIOLOGIA, true);
+
+        when(medicoRepository.findById(1L)).thenReturn(Optional.empty());
+
+        RuntimeException exception = assertThrows(RuntimeException.class, () -> medicoService.update(1L, dto));
+
+        assertEquals("Médico não encontrado", exception.getMessage());
+    }
+    
+    @Test
+    void deveExcluirMedicoPorId() {
+        Long id = 1L;
+
+        doNothing().when(medicoRepository).deleteById(id);
+
+        medicoService.deleteById(id);
+
+        verify(medicoRepository, times(1)).deleteById(id);
     }
 }

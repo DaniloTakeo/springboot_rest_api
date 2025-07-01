@@ -22,6 +22,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.test.context.ActiveProfiles;
 
 import com.example.clinicapi.dto.ConsultaDTO;
 import com.example.clinicapi.mapper.ConsultaMapper;
@@ -34,6 +35,7 @@ import com.example.clinicapi.repository.MedicoRepository;
 import com.example.clinicapi.repository.PacienteRepository;
 
 @ExtendWith(MockitoExtension.class)
+@ActiveProfiles("test")
 class ConsultaServiceTest {
 
     @Mock
