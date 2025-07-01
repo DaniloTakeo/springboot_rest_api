@@ -85,7 +85,7 @@ class MedicoServiceTest {
     void deveLancarExcecaoQuandoMedicoNaoExistir() {
         when(medicoRepository.findById(1L)).thenReturn(Optional.empty());
 
-        Exception exception = assertThrows(EntityNotFoundException.class, () -> buscarMedicoOuFalhar());
+        Exception exception = assertThrows(EntityNotFoundException.class, this::buscarMedicoOuFalhar);
 
         assertEquals("Médico não encontrado", exception.getMessage());
     }
