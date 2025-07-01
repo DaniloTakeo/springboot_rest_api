@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -105,5 +106,44 @@ class ConsultaControllerIT extends TestBaseIT {
 
         Optional<Consulta> encontrada = consultaRepository.findById(consulta.getId());
         assertTrue(encontrada.isEmpty());
+    }
+    
+    @Test
+    @WithMockUser(username = "admin", roles = {"ADMIN"})
+    void deveBuscarConsultaPorId() throws Exception {
+        Paciente paciente = pacienteRepository.save(new Paciente(null, "Julia", "julia@email.com", "12345678905",
+                "11888888888", LocalDate.of(1995, 3, 10), true));
+        Medico medico = medicoRepository.save(new Medico(null, "Dr. Pedro", "888888", Especialidade.PEDIATRIA, "pedro@email.com", "987654321", true));
+        Consulta consulta = consultaRepository.save(new Consulta(null, paciente, medico, LocalDateTime.now().plusDays(2), StatusConsulta.AGENDADA, "Consulta pediátrica"));
+
+        mockMvc.perform(get("/consultas/" + consulta.getId()))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").value(consulta.getId()))
+                .andExpect(jsonPath("$.motivoCancelamento").value("Consulta pediátrica"));
+    }
+    
+    @Test
+    @WithMockUser(username = "admin", roles = {"ADMIN"})
+    void deveRetornar404QuandoConsultaNaoEncontrada() throws Exception {
+        mockMvc.perform(get("/consultas/999999"))
+                .andExpect(status().isNotFound());
+    }
+    
+    @Test
+    @WithMockUser(username = "admin", roles = {"ADMIN"})
+    void deveAtualizarConsulta() throws Exception {
+        Paciente paciente = pacienteRepository.save(new Paciente(null, "Beatriz", "bia@email.com", "12345678906",
+                "11777777777", LocalDate.of(1992, 7, 20), true));
+        Medico medico = medicoRepository.save(new Medico(null, "Dr. Ana", "777777", Especialidade.GINECOLOGIA, "ana@email.com", "123456789", true));
+        Consulta consulta = consultaRepository.save(new Consulta(null, paciente, medico, LocalDateTime.now().plusDays(5), StatusConsulta.AGENDADA, "Avaliação inicial"));
+
+        ConsultaDTO atualizado = new ConsultaDTO(consulta.getId(), paciente.getId(), medico.getId(),
+                consulta.getDataHora().plusDays(1), "Remarcada", StatusConsulta.AGENDADA);
+
+        mockMvc.perform(put("/consultas/" + consulta.getId())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(atualizado)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.motivoCancelamento").value("Remarcada"));
     }
 }

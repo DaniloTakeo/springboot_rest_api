@@ -184,6 +184,10 @@ public class ConsultaService {
             if (consultaDTO.status() != null) {
                 consulta.setStatus(consultaDTO.status());
             }
+            if (consultaDTO.motivoCancelamento() != null) {
+                consulta.setMotivoCancelamento(consultaDTO
+                        .motivoCancelamento());
+            }
 
             final Consulta updatedConsulta = consultaRepository.save(consulta);
             log.info("Consulta ID {} atualizada com sucesso", id);
