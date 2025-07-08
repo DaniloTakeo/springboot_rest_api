@@ -33,7 +33,7 @@ pipeline {
         stage('Derrubar containers antigos') {
             steps {
                 dir('clinic-api') {
-                    sh 'docker compose down || true'
+                    sh 'docker-compose down || true'
                 }
             }
         }
@@ -41,7 +41,7 @@ pipeline {
         stage('Subir aplicação') {
             steps {
                 dir('clinic-api') {
-                    sh 'docker compose up -d --build'
+                    sh 'docker-compose up -d --build'
                 }
             }
         }
