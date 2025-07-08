@@ -8,33 +8,25 @@ pipeline {
     stages {
         stage('Build da imagem Docker') {
             steps {
-                dir('clinic-api') {
-                    sh "docker build -t $PROJECT_NAME ."
-                }
+                sh "docker build -t $PROJECT_NAME ."
             }
         }
 
         stage('Executar testes') {
             steps {
-                dir('clinic-api') {
-                    sh 'mvn test'
-                }
+                sh 'mvn test'
             }
         }
 
         stage('Derrubar containers antigos') {
             steps {
-                dir('clinic-api') {
-                    sh 'docker compose down || true'
-                }
+                sh 'docker compose down || true'
             }
         }
 
         stage('Subir aplicação') {
             steps {
-                dir('clinic-api') {
-                    sh 'docker compose up -d --build'
-                }
+                sh 'docker compose up -d --build'
             }
         }
     }
