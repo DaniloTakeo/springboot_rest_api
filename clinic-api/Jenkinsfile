@@ -6,6 +6,14 @@ pipeline {
     }
 
     stages {
+    	stage('Inicilização da infraestrutura miníma de testes') {
+    		steps {
+    			dir('clinic-api') {
+    				sh 'docker-compose up -d mysql redis'
+    			}
+    		}
+    	}
+    
     	stage('Build da Aplicação Java') {
             steps {
                 dir('clinic-api') {
@@ -13,6 +21,7 @@ pipeline {
                 }
             }
         }
+        
         stage('Build da imagem Docker') {
             steps {
                 dir('clinic-api') {
