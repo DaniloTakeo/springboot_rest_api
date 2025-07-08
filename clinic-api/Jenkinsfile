@@ -6,6 +6,13 @@ pipeline {
     }
 
     stages {
+    	stage('Build da Aplicação Java') {
+            steps {
+                dir('clinic-api') {
+                    sh 'mvn clean install -DskipTests'
+                }
+            }
+        }
         stage('Build da imagem Docker') {
             steps {
                 dir('clinic-api') {
