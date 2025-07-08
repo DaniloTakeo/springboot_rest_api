@@ -6,68 +6,6 @@ pipeline {
     }
 
     stages {
-        stage('Clonar Repositório') {
-            steps {
-                git url: 'https://github.com/DaniloTakeo/springboot_rest_api.git', branch: 'main'
-            }
-        }
-
-        stage('Build da imagem Docker') {
-            steps {
-                dir('clinic-api') {
-                    sh "docker build -t $PROJECT_NAME ."
-                }
-            }
-        }
-
-        stage('Executar testes') {
-            steps {
-                dir('clinic-api') {
-                    sh 'mvn test'
-                }
-            }
-        }
-
-        stage('Derrubar containers antigos') {
-            steps {
-                dir('clinic-api') {
-                    sh 'docker compose down || true'
-                }
-            }
-        }
-
-        stage('Subir aplicação') {
-            steps {
-                dir('clinic-api') {
-                    sh 'docker compose up -d --build'
-                }
-            }
-        }
-    }
-
-    post {
-        success {
-            echo '✅ Deploy realizado com sucesso!'
-        }
-        failure {
-            echo '❌ Erro no deploy.'
-        }
-    }
-}
-pipeline {
-    agent any
-
-    environment {
-        PROJECT_NAME = 'clinic-api'
-    }
-
-    stages {
-        stage('Clonar Repositório') {
-            steps {
-                git url: 'https://github.com/DaniloTakeo/springboot_rest_api.git', branch: 'main'
-            }
-        }
-
         stage('Build da imagem Docker') {
             steps {
                 dir('clinic-api') {
