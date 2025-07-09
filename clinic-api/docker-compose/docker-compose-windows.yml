@@ -12,7 +12,7 @@ services:
       - mysql-data:/var/lib/mysql
     networks:
       - clinic-network
-
+      
   redis:
     image: redis:7.2
     container_name: redis_container
@@ -36,20 +36,16 @@ services:
     networks:
       - clinic-network
       - observability
-
+    
   prometheus:
-    image: prom/prometheus:latest
+    image: prom/prometheus
     container_name: prometheus
     volumes:
-      - /var/jenkins_home/workspace/deploy-clinic-api/clinic-api/prometheus:/usr/local/etc/prometheus-config
+      - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
     ports:
       - "9090:9090"
-    command:
-      - '--config.file=/usr/local/etc/prometheus-config/prometheus.yml'
-      - '--storage.tsdb.path=/prometheus'
     networks:
       - observability
-    restart: unless-stopped
 
   grafana:
     image: grafana/grafana
@@ -70,20 +66,17 @@ services:
     command: -config.file=/etc/loki/local-config.yaml
     networks:
       - observability
-    restart: unless-stopped
 
   promtail:
     image: grafana/promtail:2.9.4
     container_name: promtail
     volumes:
-      - /var/jenkins_home/workspace/deploy-clinic-api/clinic-api/promtail:/usr/local/etc/promtail-config:ro
+      - ./promtail/promtail-config.yml:/etc/promtail/config-local.yml
       - /var/lib/docker/containers:/var/lib/docker/containers:ro
       - /etc/machine-id:/etc/machine-id:ro
-    command:
-      - '-config.file=/usr/local/etc/promtail-config/promtail-config.yml'
+    command: -config.file=/etc/promtail/config-local.yml
     networks:
       - observability
-    restart: unless-stopped
 
 volumes:
   mysql-data:
