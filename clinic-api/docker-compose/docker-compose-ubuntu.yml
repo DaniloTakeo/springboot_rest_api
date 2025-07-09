@@ -38,14 +38,14 @@ services:
       - observability
 
   prometheus:
-    image: prom/prometheus:latest
+    build:
+      context: ./prometheus
+      dockerfile: Dockerfile
     container_name: prometheus
-    volumes:
-      - /var/jenkins_home/workspace/deploy-clinic-api/clinic-api/prometheus:/usr/local/etc/prometheus-config
     ports:
       - "9090:9090"
     command:
-      - '--config.file=/usr/local/etc/prometheus-config/prometheus.yml'
+      - '--config.file=/etc/prometheus/prometheus.yml'
       - '--storage.tsdb.path=/prometheus'
     networks:
       - observability
