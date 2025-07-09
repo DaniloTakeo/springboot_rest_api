@@ -71,16 +71,16 @@ services:
       - observability
 
   promtail:
-    image: grafana/promtail:2.9.4
+    build:
+      context: ./promtail
+      dockerfile: Dockerfile
     container_name: promtail
     volumes:
-      - /var/jenkins_home/workspace/deploy-clinic-api/clinic-api/promtail:/usr/local/etc/promtail-config:ro
       - /var/lib/docker/containers:/var/lib/docker/containers:ro
       - /etc/machine-id:/etc/machine-id:ro
-    command:
-      - '-config.file=/usr/local/etc/promtail-config/promtail-config.yml'
     networks:
       - observability
+    restart: unless-stopped
 
 volumes:
   mysql-data:

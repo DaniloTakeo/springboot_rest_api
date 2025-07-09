@@ -74,7 +74,7 @@ services:
 
   promtail:
   build:
-    context: ./promtail # O Dockerfile está em ./promtail
+    context: ./promtail
     dockerfile: Dockerfile
   container_name: promtail
   volumes:
