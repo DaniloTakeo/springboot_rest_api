@@ -44,9 +44,6 @@ services:
       - /var/jenkins_home/workspace/deploy-clinic-api/clinic-api/prometheus:/usr/local/etc/prometheus-config
     ports:
       - "9090:9090"
-    command:
-      - '--config.file=/usr/local/etc/prometheus-config/prometheus.yml'
-      - '--storage.tsdb.path=/prometheus'
     networks:
       - observability
 
