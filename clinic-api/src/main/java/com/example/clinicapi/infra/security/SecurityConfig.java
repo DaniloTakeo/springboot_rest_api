@@ -70,7 +70,7 @@ public class SecurityConfig {
                             "/actuator",
                             "/actuator/**",
                             "/oauth2/**",
-                            "/login/oauth2/**" 
+                            "/login/oauth2/**"
                         ).permitAll()
                         .anyRequest().authenticated()
                         .and()
