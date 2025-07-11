@@ -3,6 +3,7 @@ package com.example.clinicapi.infra.security;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -42,6 +43,7 @@ public class SecurityConfig {
      * configurada com as regras definidas.
      * @throws Exception Se ocorrer um erro durante a configuração.
      */
+    @SuppressWarnings("removal")
     @Bean
     public SecurityFilterChain securityFilterChain(
             final HttpSecurity http,
@@ -55,18 +57,28 @@ public class SecurityConfig {
             .sessionManagement(session -> session
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
             )
-            .authorizeHttpRequests(auth -> auth
-                .requestMatchers(
-                    "/auth/**",
-                    "/auth",
-                    "/usuarios",
-                    "/v3/api-docs/**",
-                    "/swagger-ui/**",
-                    "/swagger-ui.html",
-                    "/actuator",
-                    "/actuator/**"
-                ).permitAll()
-                .anyRequest().authenticated()
+            .authorizeHttpRequests(auth -> {
+                try {
+                    auth
+                        .requestMatchers(
+                            "/auth/**",
+                            "/auth",
+                            "/usuarios",
+                            "/v3/api-docs/**",
+                            "/swagger-ui/**",
+                            "/swagger-ui.html",
+                            "/actuator",
+                            "/actuator/**",
+                            "/oauth2/**",
+                            "/login/oauth2/**" 
+                        ).permitAll()
+                        .anyRequest().authenticated()
+                        .and()
+                        .oauth2Login(Customizer.withDefaults());
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
             )
             .addFilterBefore(securityFilter,
                     UsernamePasswordAuthenticationFilter.class);
