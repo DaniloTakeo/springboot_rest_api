@@ -31,6 +31,9 @@ jobs:
           sudo apt-get install -y docker-compose
 
       - name: Start infrastructure with Docker Compose
+        env:
+          GOOGLE_CLIENT_ID: ${{ secrets.GOOGLE_CLIENT_ID }}
+          GOOGLE_CLIENT_SECRET: ${{ secrets.GOOGLE_CLIENT_SECRET }}
         run: docker-compose up -d mysql redis
         working-directory: ./clinic-api
 
