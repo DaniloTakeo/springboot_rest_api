@@ -13,9 +13,8 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.util.ReflectionTestUtils;
 
+import com.example.clinicapi.exception.TokenInvalidoException;
 import com.example.clinicapi.infra.security.JwtService;
-
-import io.jsonwebtoken.JwtException;
 
 @ExtendWith(MockitoExtension.class)
 @ActiveProfiles("test")
@@ -47,8 +46,8 @@ class JwtServiceTest {
 
     @Test
     void deveLancarExcecaoParaTokenInvalido() {
-        JwtException exception = assertThrows(
-                JwtException.class,
+        TokenInvalidoException exception = assertThrows(
+                TokenInvalidoException.class,
                 () -> jwtService.getSubject("token.invalido.aqui")
         );
 

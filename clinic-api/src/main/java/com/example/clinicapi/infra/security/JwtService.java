@@ -8,6 +8,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import com.example.clinicapi.exception.TokenInvalidoException;
+
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
@@ -100,6 +102,7 @@ public final class JwtService {
      *
      * @param token O token JWT a ser parseado.
      * @return O sujeito do token.
+     * @throws TokenInvalidoException Se o token for inválido ou malformado.
      */
     public String getSubject(final String token) {
         try {
@@ -114,10 +117,12 @@ public final class JwtService {
             LOGGER.info("Subject extraído do token: '{}'", subject);
             return subject;
         } catch (JwtException e) {
-            String errorMessage = String.format("Erro ao extrair subject"
-                    + " do token JWT. Token fornecido: '%s'", token);
+            String errorMessage = String.format(
+                "Erro ao extrair subject do token JWT. Token fornecido: '%s'",
+                token
+            );
             LOGGER.error("{} - {}", errorMessage, e.getMessage());
-            throw new JwtException(errorMessage, e);
+            throw new TokenInvalidoException(errorMessage, e);
         }
     }
 }

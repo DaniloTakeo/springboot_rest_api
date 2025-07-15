@@ -61,7 +61,8 @@ public class SecurityConfig {
                 try {
                     configureEndpoints(auth);
                 } catch (Exception e) {
-                    log.error("Erro ao configurar endpoints públicos e OAuth2", e);
+                    log.error("Erro ao configurar endpoints"
+                            + " públicos e OAuth2", e);
                 }
             })
             .addFilterBefore(securityFilter,
@@ -107,19 +108,21 @@ public class SecurityConfig {
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
-    
+
     /**
      * Define os endpoints públicos e configura a autenticação via OAuth2.
      * Este método é extraído para isolar a lógica de autorização e
      * evitar o uso direto de try-catch com lógica de configuração inline.
      *
-     * @param auth O objeto {@link AuthorizeHttpRequestsConfigurer.AuthorizationManagerRequestMatcherRegistry}
+     * @param auth O objeto {@link AuthorizeHttpRequestsConfigurer
+     * .AuthorizationManagerRequestMatcherRegistry}
      * utilizado para configurar os endpoints autorizados.
      * @throws Exception Se houver falha ao aplicar as configurações.
      */
     @SuppressWarnings("removal")
     private void configureEndpoints(
-            AuthorizeHttpRequestsConfigurer<HttpSecurity>.AuthorizationManagerRequestMatcherRegistry auth
+            final AuthorizeHttpRequestsConfigurer<HttpSecurity>
+            .AuthorizationManagerRequestMatcherRegistry auth
     ) throws Exception {
         auth
             .requestMatchers(
