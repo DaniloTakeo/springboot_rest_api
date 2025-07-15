@@ -8,6 +8,7 @@ import org.springframework.security.config.annotation.authentication.builders.Au
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
+import org.springframework.security.config.annotation.web.configurers.AuthorizeHttpRequestsConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -43,7 +44,6 @@ public class SecurityConfig {
      * configurada com as regras definidas.
      * @throws Exception Se ocorrer um erro durante a configuração.
      */
-    @SuppressWarnings("removal")
     @Bean
     public SecurityFilterChain securityFilterChain(
             final HttpSecurity http,
@@ -59,27 +59,11 @@ public class SecurityConfig {
             )
             .authorizeHttpRequests(auth -> {
                 try {
-                    auth
-                        .requestMatchers(
-                            "/auth/**",
-                            "/auth",
-                            "/usuarios",
-                            "/v3/api-docs/**",
-                            "/swagger-ui/**",
-                            "/swagger-ui.html",
-                            "/actuator",
-                            "/actuator/**",
-                            "/oauth2/**",
-                            "/login/oauth2/**"
-                        ).permitAll()
-                        .anyRequest().authenticated()
-                        .and()
-                        .oauth2Login(Customizer.withDefaults());
+                    configureEndpoints(auth);
                 } catch (Exception e) {
-                    e.printStackTrace();
+                    log.error("Erro ao configurar endpoints públicos e OAuth2", e);
                 }
-            }
-            )
+            })
             .addFilterBefore(securityFilter,
                     UsernamePasswordAuthenticationFilter.class);
 
@@ -123,4 +107,36 @@ public class SecurityConfig {
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
+    
+    /**
+     * Define os endpoints públicos e configura a autenticação via OAuth2.
+     * Este método é extraído para isolar a lógica de autorização e
+     * evitar o uso direto de try-catch com lógica de configuração inline.
+     *
+     * @param auth O objeto {@link AuthorizeHttpRequestsConfigurer.AuthorizationManagerRequestMatcherRegistry}
+     * utilizado para configurar os endpoints autorizados.
+     * @throws Exception Se houver falha ao aplicar as configurações.
+     */
+    @SuppressWarnings("removal")
+    private void configureEndpoints(
+            AuthorizeHttpRequestsConfigurer<HttpSecurity>.AuthorizationManagerRequestMatcherRegistry auth
+    ) throws Exception {
+        auth
+            .requestMatchers(
+                "/auth/**",
+                "/auth",
+                "/usuarios",
+                "/v3/api-docs/**",
+                "/swagger-ui/**",
+                "/swagger-ui.html",
+                "/actuator",
+                "/actuator/**",
+                "/oauth2/**",
+                "/login/oauth2/**"
+            ).permitAll()
+            .anyRequest().authenticated()
+            .and()
+            .oauth2Login(Customizer.withDefaults());
+    }
+
 }
