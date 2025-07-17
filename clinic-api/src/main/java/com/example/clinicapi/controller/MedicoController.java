@@ -2,6 +2,7 @@ package com.example.clinicapi.controller;
 
 import java.net.URI;
 
+import org.springframework.context.annotation.Lazy;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
@@ -45,7 +46,7 @@ public final class MedicoController {
     /**
      * Serviço responsável pela lógica de negócios das operações de médico.
      */
-    private final MedicoService medicoService;
+    private final @Lazy MedicoService medicoService;
 
     /**
      * Lista todos os médicos ativos e inativos com paginação.

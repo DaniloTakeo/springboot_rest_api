@@ -4,6 +4,7 @@ import java.util.Optional;
 
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -14,6 +15,7 @@ import com.example.clinicapi.model.Especialidade;
 import com.example.clinicapi.model.Medico;
 import com.example.clinicapi.repository.MedicoRepository;
 
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -25,6 +27,7 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 @Service
 @RequiredArgsConstructor
+@Lazy
 public class MedicoService {
 
     /**
@@ -42,7 +45,7 @@ public class MedicoService {
     /**
      * Repositório para operações de persistência de médicos.
      */
-    private final MedicoRepository medicoRepository;
+    private final @Lazy MedicoRepository medicoRepository;
 
     /**
      * Mapper para conversão entre entidades Medico e MedicoDTO.

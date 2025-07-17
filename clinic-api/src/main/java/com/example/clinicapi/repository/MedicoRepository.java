@@ -1,5 +1,6 @@
 package com.example.clinicapi.repository;
 
+import org.springframework.context.annotation.Lazy;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -16,6 +17,7 @@ import com.example.clinicapi.model.Medico;
  * e funcionalidades de paginação e ordenação, estendendo JpaRepository.
  */
 @Repository
+@Lazy
 public interface MedicoRepository extends JpaRepository<Medico, Long> {
 
     /**
