@@ -1,0 +1,11 @@
+apiVersion: v1
+data:
+  machine-id: |
+    91b9f5dc026846ef98531dc6852f3b92
+kind: ConfigMap
+metadata:
+  annotations:
+    use-subpath: "true"
+  labels:
+    io.kompose.service: promtail
+  name: promtail-cm1
