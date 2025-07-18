@@ -25,6 +25,7 @@ spec:
       containers:
         - image: promtail
           name: promtail
+          imagePullPolicy: Never
           volumeMounts:
             - mountPath: /var/lib/docker/containers
               name: promtail-claim0

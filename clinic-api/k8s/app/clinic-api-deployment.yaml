@@ -23,6 +23,7 @@ spec:
       containers:
         - image: clinic-api
           name: clinic-api
+          imagePullPolicy: Never
           ports:
             - containerPort: 8081
               protocol: TCP
