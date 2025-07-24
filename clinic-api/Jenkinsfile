@@ -38,13 +38,13 @@ pipeline {
             }
         }
 
-        stage('Deploy no Kubernetes') {
-    		steps {
-        		dir('clinic-api/k8s') { // ou onde estão seus manifests
-            		sh 'kubectl apply -f -R .'
-        		}
-    		}
-		}
+        stage('Subir aplicação') {
+            steps {
+                dir('clinic-api') {
+                    sh 'docker-compose up -d --build'
+                }
+            }
+        }
     }
 
     post {
