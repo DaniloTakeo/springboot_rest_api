@@ -41,7 +41,7 @@ pipeline {
         stage('Deploy no Kubernetes') {
     		steps {
         		dir('clinic-api/k8s') { // ou onde estão seus manifests
-            		sh 'kubectl apply -f .'
+            		sh 'kubectl apply -f -R .'
         		}
     		}
 		}
