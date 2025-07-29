@@ -18,4 +18,14 @@ Esta é uma API REST desenvolvida com Spring Boot para fins de estudo e prática
 
 ---
 
+## 🛠️ Como rodar localmente
+
+```bash
+cd clinic-api
+./mvnw clean install
+docker-compose -f docker-compose/docker-compose-ubuntu.yml up
+```
+- Para Windows, utilize docker-compose-windows.yml
+
 ![Coverage](https://codecov.io/gh/DaniloTakeo/springboot_rest_api/branch/main/graph/badge.svg)
+
