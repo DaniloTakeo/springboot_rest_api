@@ -34,6 +34,7 @@ docker-compose -f docker-compose/docker-compose-ubuntu.yml up
 - [Arquitetura da Aplicação](clinic-api/docs/architecture.md)
 - [CI/CD (Jenkins e GitHub Actions)](clinic-api/docs/ci-cd.md)
 - [Testes Automatizados](clinic-api/docs/testing.md)
+- [Documentação da API](clinic-api/docs/api.md)
 - [Deploy com Docker/Kubernetes](clinic-api/docs/deployment.md)
 - [Observabilidade (Grafana/Loki)](clinic-api/docs/monitoring.md)
 
