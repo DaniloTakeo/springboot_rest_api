@@ -37,6 +37,7 @@ docker-compose -f docker-compose/docker-compose-ubuntu.yml up
 - [Documentação da API](clinic-api/docs/api.md)
 - [Deploy com Docker/Kubernetes](clinic-api/docs/deployment.md)
 - [Observabilidade (Grafana/Loki)](clinic-api/docs/monitoring.md)
+- [Estrutura do Banco de dados](clinic-api/docs/database.md)
 
 ---
 
