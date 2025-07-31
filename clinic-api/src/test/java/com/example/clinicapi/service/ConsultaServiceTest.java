@@ -46,6 +46,8 @@ class ConsultaServiceTest {
     private MedicoRepository medicoRepository;
     @Mock
     private ConsultaMapper consultaMapper;
+    @Mock
+    private EmailService emailService;
 
     @InjectMocks
     private ConsultaService consultaService;
@@ -56,6 +58,8 @@ class ConsultaServiceTest {
         Paciente paciente = new Paciente();
         Medico medico = new Medico();
         Consulta consultaSalva = new Consulta();
+        consultaSalva.setDataHora(dto.dataHora());
+        consultaSalva.setStatus(StatusConsulta.AGENDADA);
         ConsultaDTO dtoRetorno = new ConsultaDTO(10L, 1L, 1L, dto.dataHora(), null, StatusConsulta.AGENDADA);
 
         when(pacienteRepository.findById(1L)).thenReturn(Optional.of(paciente));
