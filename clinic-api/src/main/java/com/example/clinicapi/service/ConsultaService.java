@@ -107,7 +107,6 @@ public class ConsultaService {
             log.info("Consulta agendada com sucesso: id={}, dataHora={}",
                     savedConsulta.getId(), savedConsulta.getDataHora());
 
-            // Envia e-mail de confirmação ao paciente
             emailService.enviarEmail(
                     paciente.get().getEmail(),
                     "Consulta agendada com sucesso",
