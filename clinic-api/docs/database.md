@@ -56,6 +56,8 @@ Este documento descreve o schema relacional utilizado pela API, com as tabelas e
 | `senha`   | VARCHAR(255)  | NOT NULL                 |
 | `role`    | VARCHAR(50)   | NOT NULL                 |
 
+---
+
 ### 🔁 Tabela: refresh_tokens
 
 | Campo     | Tipo          | Restrições              |
