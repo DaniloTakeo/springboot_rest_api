@@ -145,10 +145,10 @@ public class AutenticacaoController {
         return ResponseEntity.ok(
             new TokenResponse(newAccessToken, token.getToken()));
     }
-    
+
     /**
      * Endpoint responsável por efetuar o logout do usuário autenticado.
-     * 
+     *
      * Esse processo remove o refresh token associado ao usuário, invalidando a
      * possibilidade de geração de novos access tokens, exigindo um novo login.
      *
@@ -159,12 +159,12 @@ public class AutenticacaoController {
     public ResponseEntity<Void> logout(
         @AuthenticationPrincipal final Usuario usuario
     ) {
-        log.debug("Iniciando processo de logout para o usuário '{}'", 
+        log.debug("Iniciando processo de logout para o usuário '{}'",
                   usuario.getLogin());
 
         refreshTokenService.excluirPorUsuario(usuario);
 
-        log.info("Logout efetuado com sucesso para o usuário '{}'", 
+        log.info("Logout efetuado com sucesso para o usuário '{}'",
                  usuario.getLogin());
 
         return ResponseEntity.noContent().build();
