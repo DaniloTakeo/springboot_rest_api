@@ -58,10 +58,22 @@ Este documento descreve o schema relacional utilizado pela API, com as tabelas e
 
 ---
 
+### 🔁 Tabela: refresh_tokens
+
+| Campo     | Tipo          | Restrições              |
+|-----------|---------------|--------------------------|
+| `id`      | BIGINT        | PK, Auto Increment       |
+| `usuario_id` | BIGINT     | FK → usuarios(id), NOT NULL |
+| `token`   | VARCHAR(255)  | NOT NULL, UNIQUE         |
+| `data_expiracao` | DATETIME | NOT NULL               |
+
+---
+
 ## 🔗 Relacionamentos
 
 - `consultas.paciente_id` → 🔗 `pacientes.id`
 - `consultas.medico_id` → 🔗 `medicos.id`
+- `refresh_tokens.usuario_id` → 🔗 `usuarios.id`
 
 > As relações são do tipo N:1 (muitas consultas para um paciente/médico).
 
