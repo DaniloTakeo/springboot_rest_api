@@ -7,6 +7,10 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import java.time.Instant;
+import java.util.Optional;
+import java.util.UUID;
+
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,7 +23,9 @@ import org.springframework.test.web.servlet.MvcResult;
 
 import com.example.clinicapi.dto.DadosAutenticacaoDTO;
 import com.example.clinicapi.dto.TokenResponse;
+import com.example.clinicapi.model.RefreshToken;
 import com.example.clinicapi.model.Usuario;
+import com.example.clinicapi.repository.RefreshTokenRepository;
 import com.example.clinicapi.repository.UsuarioRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -35,6 +41,9 @@ class AutenticacaoControllerIT extends TestBaseIT {
 
     @Autowired
     private UsuarioRepository usuarioRepository;
+    
+    @Autowired
+    private RefreshTokenRepository refreshTokenRepository;
 
     @Autowired
     private PasswordEncoder passwordEncoder;
@@ -151,6 +160,38 @@ class AutenticacaoControllerIT extends TestBaseIT {
                 .content(objectMapper.writeValueAsString(dados)))
                 .andExpect(status().isOk());
     }
+    
+    @Test
+    void deveEfetuarLogoutRemovendoRefreshToken() throws Exception {
+        // Arrange
+        String login = "usuario_logout";
+        String senha = "senhaLogout";
+
+        Usuario usuario = new Usuario(login, passwordEncoder.encode(senha));
+        usuarioRepository.save(usuario);
+
+        String token = gerarTokenJWT(login, senha);
+
+        // Cria refresh token associado ao usuário
+        RefreshToken refreshToken = RefreshToken.builder()
+            .usuario(usuario)
+            .token(UUID.randomUUID().toString())
+            .dataExpiracao(Instant.now().plusSeconds(3600))
+            .build();
+
+        refreshTokenRepository.save(refreshToken);
+
+        // Act & Assert
+        mockMvc.perform(post("/auth/logout")
+                .header("Authorization", "Bearer " + token))
+            .andExpect(status().isNoContent());
+
+        // Verifica se o token foi removido
+        Optional<RefreshToken> tokenRemovido =
+            refreshTokenRepository.findByToken(refreshToken.getToken());
+
+        assertTrue(tokenRemovido.isEmpty());
+    }
 
     @Nested
     class ValidacaoCamposTest {
@@ -202,5 +243,22 @@ class AutenticacaoControllerIT extends TestBaseIT {
                     .content(objectMapper.writeValueAsString(dados)))
                     .andExpect(status().isBadRequest());
         }
+    }
+    
+    // Método auxiliar para obter token JWT real com login válido
+    private String gerarTokenJWT(String login, String senha) throws Exception {
+        DadosAutenticacaoDTO dados = new DadosAutenticacaoDTO(login, senha);
+
+        MvcResult result = mockMvc.perform(post("/auth")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(dados)))
+            .andExpect(status().isOk())
+            .andReturn();
+
+        String respostaJson = result.getResponse().getContentAsString();
+        TokenResponse tokenResponse =
+            objectMapper.readValue(respostaJson, TokenResponse.class);
+
+        return tokenResponse.accessToken();
     }
 }
